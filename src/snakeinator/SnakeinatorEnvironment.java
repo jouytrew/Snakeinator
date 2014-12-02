@@ -5,7 +5,9 @@
  */
 package snakeinator;
 
+import audio.AudioPlayer;
 import environment.Environment;
+import environment.GraphicsPalette;
 import environment.LocationValidatorIntf;
 import grid.Grid;
 import images.ResourceTools;
@@ -38,14 +40,26 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
     int moveDelayCounter = 0;
     int moveDelayCounter2 = 0;
 
+    private ArrayList<GridObject> GridObjects;
+
     public SnakeinatorEnvironment() {
     }
 
+    public Point randomPoint() {
+        return new Point((int) (Math.random() * grid.getColumns()), (int) (Math.random() * grid.getRows()));
+    }
+
+    
+    
 //<editor-fold defaultstate="collapsed" desc="initializeEnvironment">
     @Override
     public void initializeEnvironment() {
         this.setBackground(ResourceTools.loadImageFromResource("resources/background.jpg").getScaledInstance(1366, 768, Image.SCALE_SMOOTH));
-        grid = new Grid(40, 25, 20, 20, new Point(50, 50), Color.RED);
+        grid = new Grid(40, 25, 25, 25, new Point(50, 50), Color.RED);
+        GridObjects = new ArrayList<>();
+        GridObjects.add(new GridObject(GridObjectType.APPLE, randomPoint()));
+        GridObjects.add(new GridObject(GridObjectType.APPLE, randomPoint()));
+        GridObjects.add(new GridObject(GridObjectType.POISON_BOTTLE, randomPoint()));
         /**
          * First Snake
          */
@@ -56,6 +70,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
         snake.setLocationValidator(this);
 
         ArrayList<Point> body = new ArrayList<>();
+
         body.add(new Point(3, 1));
         body.add(new Point(3, 2));
         body.add(new Point(2, 2));
@@ -114,6 +129,9 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
         }
         if (e.getKeyCode() == KeyEvent.VK_O) {
             toggleDrawGrid();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_M) {
+            AudioPlayer.play("/resources/grenade.wav");
         }
         if (e.getKeyCode() == KeyEvent.VK_A && (snake.getDirection() != Direction.RIGHT)) {
             snake.setDirection(Direction.LEFT);
@@ -184,6 +202,22 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
         if (snake2 != null) {
             snake2.draw(graphics);
         }
+        if (GridObjects != null) {
+            for (GridObject gridObject : GridObjects) {
+                if (gridObject.getType() == GridObjectType.APPLE) {
+                    GraphicsPalette.drawApple(graphics, grid.getCellSystemCoordinate(gridObject.getLocation()),
+                            grid.getCellSize(), Color.RED);
+                }
+                if (gridObject.getType() == GridObjectType.POISON_BOTTLE) {
+                    GraphicsPalette.drawPoisonBottle(graphics, grid.getCellSystemCoordinate(gridObject.getLocation()),
+                            grid.getCellSize(), Color.yellow);
+                }
+                if (gridObject.getType() == GridObjectType.BIOHAZARD) {
+                    snake.drawBiohazard(graphics, grid.getCellSystemCoordinate(gridObject.getLocation()),
+                            grid.getCellSize());
+                }
+            }
+        }
     }
 //</editor-fold>
 
@@ -231,7 +265,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
         if (point.y < 0) {
             point.y = grid.getRows() - 1;
         }
-        if (point.y > grid.getRows()) {
+        if (point.y > grid.getRows() - 1) {
             point.y = 0;
         }
         return point;

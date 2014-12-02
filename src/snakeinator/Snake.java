@@ -6,8 +6,11 @@
 package snakeinator;
 
 import environment.LocationValidatorIntf;
+import images.ResourceTools;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Point;
 import java.util.ArrayList;
 
@@ -28,6 +31,9 @@ public class Snake {
     private int green;
     private int blue;
     private int growthCounter;
+    
+    private Image biohazard;
+    
 
     /**
      * grow ---- 
@@ -76,6 +82,13 @@ public class Snake {
             graphics.setColor(new Color(red, green, blue));
             graphics.fillOval(topLeft.x, topLeft.y, drawData.getCellWidth(), drawData.getCellHeight());
         }
+    }
+    
+    public void drawBiohazard(Graphics graphics, Point point, Dimension dimension) {
+        biohazard = ResourceTools.loadImageFromResource("resources/biohazard.png");
+        graphics.fillOval(point.x, point.y, dimension.width, dimension.height);
+        graphics.drawImage(biohazard, point.x + drawData.getCellWidth()/16, point.y + drawData.getCellHeight()/16, 
+                7*dimension.width/8, 7*dimension.height/8, null);
     }
 
     public final int HEAD_POSITION = 0;
