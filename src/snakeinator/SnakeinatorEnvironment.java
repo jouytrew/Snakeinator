@@ -36,11 +36,11 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
     public final int MEDIUM_SPEED = 5;
     public final int HIGH_SPEED = 3;
 
-    int moveDelayLimit = MEDIUM_SPEED;
+    int moveDelayLimit = SLOW_SPEED;
     int moveDelayCounter = 0;
     int moveDelayCounter2 = 0;
 
-    private ArrayList<GridObject> GridObjects;
+    private ArrayList<GridObject> gridObjects;
 
     public SnakeinatorEnvironment() {
     }
@@ -56,15 +56,15 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
     public void initializeEnvironment() {
         this.setBackground(ResourceTools.loadImageFromResource("resources/background.jpg").getScaledInstance(1366, 768, Image.SCALE_SMOOTH));
         grid = new Grid(40, 25, 25, 25, new Point(50, 50), Color.RED);
-        GridObjects = new ArrayList<>();
-        GridObjects.add(new GridObject(GridObjectType.APPLE, randomPoint()));
-        GridObjects.add(new GridObject(GridObjectType.APPLE, randomPoint()));
-        GridObjects.add(new GridObject(GridObjectType.POISON_BOTTLE, randomPoint()));
+        gridObjects = new ArrayList<>();
+        gridObjects.add(new GridObject(GridObjectType.APPLE, randomPoint()));
+        gridObjects.add(new GridObject(GridObjectType.APPLE, randomPoint()));
+        gridObjects.add(new GridObject(GridObjectType.POISON_BOTTLE, randomPoint()));
         /**
          * First Snake
          */
         snake = new Snake();
-        snake.setColorCode(255, 0, 0);
+        snake.setColorCode(255, 0, 0, 255);
         snake.setDirection(Direction.RIGHT);
         snake.setDrawData(this);
         snake.setLocationValidator(this);
@@ -80,7 +80,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
          * End of First Snake Snake 2 below
          */
         snake2 = new Snake();
-        snake2.setColorCode(0, 255, 0);
+        snake2.setColorCode(0, 255, 0, 255);
         snake2.setDirection(Direction.RIGHT);
         snake2.setDrawData(this);
         snake2.setLocationValidator(this);
@@ -202,8 +202,8 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
         if (snake2 != null) {
             snake2.draw(graphics);
         }
-        if (GridObjects != null) {
-            for (GridObject gridObject : GridObjects) {
+        if (gridObjects != null) {
+            for (GridObject gridObject : gridObjects) {
                 if (gridObject.getType() == GridObjectType.APPLE) {
                     GraphicsPalette.drawApple(graphics, grid.getCellSystemCoordinate(gridObject.getLocation()),
                             grid.getCellSize(), Color.RED);
@@ -258,16 +258,31 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
     public Point validateLocation(Point point) {
         if (point.x < 0) {
             point.x = grid.getColumns() - 1;
-        }
-        if (point.x > grid.getColumns() - 1) {
+        } if (point.x > grid.getColumns() - 1) {
             point.x = 0;
-        }
-        if (point.y < 0) {
+        } if (point.y < 0) {
             point.y = grid.getRows() - 1;
-        }
-        if (point.y > grid.getRows() - 1) {
+        } if (point.y > grid.getRows() - 1) {
             point.y = 0;
         }
+        /**
+         * check if the snake hit a GridObject
+         *  --Apple
+         *  --Poison
+         * Look at all the locations stored in the gridObject ArrayList for each,
+         * compare to head loc.
+         */
+        for (GridObject object : gridObjects){
+            if (object.getLocation().equals(point) == true) {
+                System.out.println("HIT = " + object.getType());
+                if (object.getType() == GridObjectType.APPLE) {
+                    object.setLocation(randomPoint());
+                
+                }
+            }
+        }
+        
+        
         return point;
     }
 //</editor-fold>
@@ -285,5 +300,6 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
         drawGrid = !drawGrid;
     }
 //</editor-fold>
+    
 
 }

@@ -19,7 +19,7 @@ import java.util.ArrayList;
  * @author Benjamin Wong
  */
 public class Snake {
-
+    
     private ArrayList<Point> body = new ArrayList<>();
     private Direction direction = Direction.RIGHT;
     private GridDrawData drawData;
@@ -30,6 +30,7 @@ public class Snake {
     private int red;
     private int green;
     private int blue;
+    private int opac;
     private int growthCounter;
     
     private Image biohazard;
@@ -74,8 +75,8 @@ public class Snake {
     
     public void draw(Graphics graphics) {
         for (Point bodySegmentLocation : getBody()) {
-            System.out.println("Location = " + bodySegmentLocation);
-            System.out.println("System Loc = " + drawData.getCellSystemCoordinate(bodySegmentLocation));
+//            System.out.println("Location = " + bodySegmentLocation);
+//            System.out.println("System Loc = " + drawData.getCellSystemCoordinate(bodySegmentLocation));
 
             Point topLeft = drawData.getCellSystemCoordinate(bodySegmentLocation);
 
@@ -145,10 +146,11 @@ public class Snake {
         paused = !paused;
     }
 
-    public void setColorCode(int red, int green, int blue) {
+    public void setColorCode(int red, int green, int blue, int opac) {
         this.red = red;
         this.green = green;
         this.blue = blue;
+        this.opac = opac;
     }    
     /**
      * @return the growthCounter
@@ -167,5 +169,4 @@ public class Snake {
     public void grow(int length){
         growthCounter += length;
     }
-
 }
