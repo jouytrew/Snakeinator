@@ -12,6 +12,7 @@ import environment.LocationValidatorIntf;
 import grid.Grid;
 import images.ResourceTools;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -31,6 +32,8 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
     private Snake snake;
     private Boolean drawGrid = true;
     private Snake snake2;
+    private int score = 0;
+    private int score2 = 0;
 
     public final int SLOW_SPEED = 7;
     public final int MEDIUM_SPEED = 5;
@@ -41,12 +44,21 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
     int moveDelayCounter2 = 0;
 
     private ArrayList<GridObject> gridObjects;
+    private ArrayList<Score> scores;
 
     public SnakeinatorEnvironment() {
     }
 
     public Point randomPoint() {
-        return new Point((int) (Math.random() * grid.getColumns()), (int) (Math.random() * grid.getRows()));
+        Point p = new Point((int) (Math.random() * grid.getColumns()), (int) (Math.random() * grid.getRows()));
+//        for (Point body : snake.getBody()) {
+//            for (Point body2 : snake.getBody()) {
+//                if (p == body || p == body2){
+//                    p = new Point((int) (Math.random() * grid.getColumns()), (int) (Math.random() * grid.getRows()));
+//                }
+//            }
+//        }
+        return p;
     }
 
     
@@ -56,6 +68,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
     public void initializeEnvironment() {
         this.setBackground(ResourceTools.loadImageFromResource("resources/background.jpg").getScaledInstance(1366, 768, Image.SCALE_SMOOTH));
         grid = new Grid(40, 25, 25, 25, new Point(50, 50), Color.RED);
+        scores = new ArrayList<Score>();
         gridObjects = new ArrayList<>();
         gridObjects.add(new GridObject(GridObjectType.APPLE, randomPoint()));
         gridObjects.add(new GridObject(GridObjectType.APPLE, randomPoint()));
@@ -79,18 +92,18 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
         /**
          * End of First Snake Snake 2 below
          */
-        snake2 = new Snake();
-        snake2.setColorCode(0, 255, 0, 255);
-        snake2.setDirection(Direction.RIGHT);
-        snake2.setDrawData(this);
-        snake2.setLocationValidator(this);
+        setSnake2(new Snake());
+        getSnake2().setColorCode(0, 255, 0, 255);
+        getSnake2().setDirection(Direction.RIGHT);
+        getSnake2().setDrawData(this);
+        getSnake2().setLocationValidator(this);
 
         ArrayList<Point> body2 = new ArrayList<>();
         body2.add(new Point(2, 10));
         body2.add(new Point(3, 10));
         body2.add(new Point(4, 10));
         body2.add(new Point(5, 10));
-        snake2.setBody(body2);
+        getSnake2().setBody(body2);
     }
 //</editor-fold>
 
@@ -103,11 +116,14 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
         } else {
             moveDelayCounter++;
         }
-        if (snake2 != null && (moveDelayCounter2 >= moveDelayLimit)) {
-            snake2.move();
+        if (getSnake2() != null && (moveDelayCounter2 >= moveDelayLimit)) {
+            getSnake2().move();
             moveDelayCounter2 = 0;
         } else {
             moveDelayCounter2++;
+        }
+        for (Score score : scores) {
+            score.time();
         }
     }
 //</editor-fold>
@@ -125,7 +141,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
          */
         if (e.getKeyCode() == KeyEvent.VK_P) {
             snake.togglePaused();
-            snake2.togglePaused();
+            getSnake2().togglePaused();
         }
         if (e.getKeyCode() == KeyEvent.VK_O) {
             toggleDrawGrid();
@@ -145,17 +161,17 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
         if (e.getKeyCode() == KeyEvent.VK_W && (snake.getDirection() != Direction.DOWN)) {
             snake.setDirection(Direction.UP);
         }
-        if (e.getKeyCode() == KeyEvent.VK_LEFT && (snake2.getDirection() != Direction.RIGHT)) {
-            snake2.setDirection(Direction.LEFT);
+        if (e.getKeyCode() == KeyEvent.VK_LEFT && (getSnake2().getDirection() != Direction.RIGHT)) {
+            getSnake2().setDirection(Direction.LEFT);
         }
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT && (snake2.getDirection() != Direction.LEFT)) {
-            snake2.setDirection(Direction.RIGHT);
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT && (getSnake2().getDirection() != Direction.LEFT)) {
+            getSnake2().setDirection(Direction.RIGHT);
         }
-        if (e.getKeyCode() == KeyEvent.VK_DOWN && (snake2.getDirection() != Direction.UP)) {
-            snake2.setDirection(Direction.DOWN);
+        if (e.getKeyCode() == KeyEvent.VK_DOWN && (getSnake2().getDirection() != Direction.UP)) {
+            getSnake2().setDirection(Direction.DOWN);
         }
-        if (e.getKeyCode() == KeyEvent.VK_UP && (snake2.getDirection() != Direction.DOWN)) {
-            snake2.setDirection(Direction.UP);
+        if (e.getKeyCode() == KeyEvent.VK_UP && (getSnake2().getDirection() != Direction.DOWN)) {
+            getSnake2().setDirection(Direction.UP);
         }
     }
 //</editor-fold>
@@ -167,7 +183,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
             snake.setGrowthCounter(1);
         }
         if (e.getKeyCode() == KeyEvent.VK_H) {
-            snake2.setGrowthCounter(1);
+            getSnake2().setGrowthCounter(1);
         }
     }
 //</editor-fold>
@@ -198,9 +214,13 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
         }
         if (snake != null) {
             snake.draw(graphics);
+            graphics.setFont(new Font("Courier New", Font.PLAIN, 12));
+            graphics.drawString("Snake 1: " + getScore(), 5, 12);
         }
-        if (snake2 != null) {
-            snake2.draw(graphics);
+        if (getSnake2() != null) {
+            getSnake2().draw(graphics);
+            graphics.setFont(new Font("Courier New", Font.PLAIN, 12));
+            graphics.drawString("Snake 2: " + score2, 5, 24);
         }
         if (gridObjects != null) {
             for (GridObject gridObject : gridObjects) {
@@ -216,6 +236,14 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
                     snake.drawBiohazard(graphics, grid.getCellSystemCoordinate(gridObject.getLocation()),
                             grid.getCellSize());
                 }
+            }
+        }
+        for (Score score : scores) {
+            score.draw(graphics);
+        }
+        for (Score score : scores) {
+            if (score.getTimeLeft() <= 0){
+                scores.remove(score);
             }
         }
     }
@@ -276,8 +304,16 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
             if (object.getLocation().equals(point) == true) {
                 System.out.println("HIT = " + object.getType());
                 if (object.getType() == GridObjectType.APPLE) {
+                    score += 100;
+                    scores.add(new Score(object.getLocation(), 100));                    
                     object.setLocation(randomPoint());
-                
+                    snake.setGrowthCounter(1);
+                }
+                if (object.getType() == GridObjectType.POISON_BOTTLE) {
+                    score -= 200;
+                    scores.add(new Score(object.getLocation(), -200));
+                    object.setLocation(randomPoint());
+                    
                 }
             }
         }
@@ -300,6 +336,34 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
         drawGrid = !drawGrid;
     }
 //</editor-fold>
+
+    /**
+     * @return the snake2
+     */
+    public Snake getSnake2() {
+        return snake2;
+    }
+
+    /**
+     * @param snake2 the snake2 to set
+     */
+    public void setSnake2(Snake snake2) {
+        this.snake2 = snake2;
+    }
+
+    /**
+     * @return the score
+     */
+    public int getScore() {
+        return score;
+    }
+
+    /**
+     * @param score the score to set
+     */
+    public void setScore(int score) {
+        this.score = score;
+    }
     
 
 }
