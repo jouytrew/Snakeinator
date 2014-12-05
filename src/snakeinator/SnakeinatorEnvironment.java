@@ -26,29 +26,32 @@ import java.util.ArrayList;
  *
  * @author Benjamin Wong
  */
-class SnakeinatorEnvironment extends Environment implements GridDrawData, LocationValidatorIntf {
-
+class SnakeinatorEnvironment extends Environment implements GridDrawData, /**
+         * LocationValidatorIntf,
+         */
+        SnakeLocationValidatorIntf {
+    
     private Grid grid;
     private Snake snake;
     private Boolean drawGrid = true;
     private Snake snake2;
     private int score = 0;
     private int score2 = 0;
-
+    
     public final int SLOW_SPEED = 7;
     public final int MEDIUM_SPEED = 5;
     public final int HIGH_SPEED = 3;
-
+    
     int moveDelayLimit = SLOW_SPEED;
     int moveDelayCounter = 0;
     int moveDelayCounter2 = 0;
-
+    
     private ArrayList<GridObject> gridObjects;
     private ArrayList<Score> scores;
-
+    
     public SnakeinatorEnvironment() {
     }
-
+    
     public Point randomPoint() {
         Point p = new Point((int) (Math.random() * grid.getColumns()), (int) (Math.random() * grid.getRows()));
 //        for (Point body : snake.getBody()) {
@@ -61,8 +64,6 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
         return p;
     }
 
-    
-    
 //<editor-fold defaultstate="collapsed" desc="initializeEnvironment">
     @Override
     public void initializeEnvironment() {
@@ -77,13 +78,13 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
          * First Snake
          */
         snake = new Snake();
-        snake.setColorCode(255, 0, 0, 255);
+        snake.setColorCode(255, 255, 255, 255);
         snake.setDirection(Direction.RIGHT);
         snake.setDrawData(this);
-        snake.setLocationValidator(this);
-
+//        snake.setLocationValidator(this);
+        snake.setSnakeLocationValidator(this);
+        
         ArrayList<Point> body = new ArrayList<>();
-
         body.add(new Point(3, 1));
         body.add(new Point(3, 2));
         body.add(new Point(2, 2));
@@ -92,18 +93,19 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
         /**
          * End of First Snake Snake 2 below
          */
-        setSnake2(new Snake());
-        getSnake2().setColorCode(0, 255, 0, 255);
-        getSnake2().setDirection(Direction.RIGHT);
-        getSnake2().setDrawData(this);
-        getSnake2().setLocationValidator(this);
-
+        snake2 = new Snake();
+        snake2.setColorCode(0, 255, 0, 255);
+        snake2.setDirection(Direction.RIGHT);
+        snake2.setDrawData(this);
+//        snake2.setLocationValidator(this);
+        snake2.setSnakeLocationValidator(this);
+        
         ArrayList<Point> body2 = new ArrayList<>();
         body2.add(new Point(2, 10));
         body2.add(new Point(3, 10));
         body2.add(new Point(4, 10));
         body2.add(new Point(5, 10));
-        getSnake2().setBody(body2);
+        snake2.setBody(body2);
     }
 //</editor-fold>
 
@@ -116,8 +118,8 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
         } else {
             moveDelayCounter++;
         }
-        if (getSnake2() != null && (moveDelayCounter2 >= moveDelayLimit)) {
-            getSnake2().move();
+        if (snake2 != null && (moveDelayCounter2 >= moveDelayLimit)) {
+            snake2.move();
             moveDelayCounter2 = 0;
         } else {
             moveDelayCounter2++;
@@ -141,7 +143,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
          */
         if (e.getKeyCode() == KeyEvent.VK_P) {
             snake.togglePaused();
-            getSnake2().togglePaused();
+            snake2.togglePaused();
         }
         if (e.getKeyCode() == KeyEvent.VK_O) {
             toggleDrawGrid();
@@ -161,17 +163,17 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
         if (e.getKeyCode() == KeyEvent.VK_W && (snake.getDirection() != Direction.DOWN)) {
             snake.setDirection(Direction.UP);
         }
-        if (e.getKeyCode() == KeyEvent.VK_LEFT && (getSnake2().getDirection() != Direction.RIGHT)) {
-            getSnake2().setDirection(Direction.LEFT);
+        if (e.getKeyCode() == KeyEvent.VK_LEFT && (snake2.getDirection() != Direction.RIGHT)) {
+            snake2.setDirection(Direction.LEFT);
         }
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT && (getSnake2().getDirection() != Direction.LEFT)) {
-            getSnake2().setDirection(Direction.RIGHT);
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT && (snake2.getDirection() != Direction.LEFT)) {
+            snake2.setDirection(Direction.RIGHT);
         }
-        if (e.getKeyCode() == KeyEvent.VK_DOWN && (getSnake2().getDirection() != Direction.UP)) {
-            getSnake2().setDirection(Direction.DOWN);
+        if (e.getKeyCode() == KeyEvent.VK_DOWN && (snake2.getDirection() != Direction.UP)) {
+            snake2.setDirection(Direction.DOWN);
         }
-        if (e.getKeyCode() == KeyEvent.VK_UP && (getSnake2().getDirection() != Direction.DOWN)) {
-            getSnake2().setDirection(Direction.UP);
+        if (e.getKeyCode() == KeyEvent.VK_UP && (snake2.getDirection() != Direction.DOWN)) {
+            snake2.setDirection(Direction.UP);
         }
     }
 //</editor-fold>
@@ -183,7 +185,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
             snake.setGrowthCounter(1);
         }
         if (e.getKeyCode() == KeyEvent.VK_H) {
-            getSnake2().setGrowthCounter(1);
+            snake2.setGrowthCounter(1);
         }
     }
 //</editor-fold>
@@ -215,12 +217,14 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
         if (snake != null) {
             snake.draw(graphics);
             graphics.setFont(new Font("Courier New", Font.PLAIN, 12));
-            graphics.drawString("Snake 1: " + getScore(), 5, 12);
+            graphics.setColor(new Color(snake.getRed(), snake.getGreen(), snake.getBlue()));
+            graphics.drawString("Snake 1: " + snake.getScore(), 5, 12);
         }
-        if (getSnake2() != null) {
-            getSnake2().draw(graphics);
+        if (snake2 != null) {
+            snake2.draw(graphics);
             graphics.setFont(new Font("Courier New", Font.PLAIN, 12));
-            graphics.drawString("Snake 2: " + score2, 5, 24);
+            graphics.setColor(new Color(snake2.getRed(), snake2.getGreen(), snake2.getBlue()));
+            graphics.drawString("Snake 2: " + snake2.getScore(), 5, 24);
         }
         if (gridObjects != null) {
             for (GridObject gridObject : gridObjects) {
@@ -242,7 +246,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
             score.draw(graphics);
         }
         for (Score score : scores) {
-            if (score.getTimeLeft() <= 0){
+            if (score.getTimeLeft() <= 0) {
                 scores.remove(score);
             }
         }
@@ -254,72 +258,30 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
     public int getCellHeight() {
         return grid.getCellHeight();
     }
-
+    
     @Override
     public int getCellWidth() {
         return grid.getCellWidth();
     }
-
+    
     @Override
     public Point getCellSystemCoordinate(Point cellCoordinate) {
         return grid.getCellSystemCoordinate(cellCoordinate);
     }
-
+    
     @Override
     public int getColumns() {
         return grid.getColumns();
     }
-
+    
     @Override
     public int getRows() {
         return grid.getRows();
     }
-
+    
     @Override
     public Point getRandomGridLocation() {
         return grid.getRandomGridLocation();
-    }
-//</editor-fold>
-
-//<editor-fold defaultstate="collapsed" desc="LocationValidatorIntf">
-    @Override
-    public Point validateLocation(Point point) {
-        if (point.x < 0) {
-            point.x = grid.getColumns() - 1;
-        } if (point.x > grid.getColumns() - 1) {
-            point.x = 0;
-        } if (point.y < 0) {
-            point.y = grid.getRows() - 1;
-        } if (point.y > grid.getRows() - 1) {
-            point.y = 0;
-        }
-        /**
-         * check if the snake hit a GridObject
-         *  --Apple
-         *  --Poison
-         * Look at all the locations stored in the gridObject ArrayList for each,
-         * compare to head loc.
-         */
-        for (GridObject object : gridObjects){
-            if (object.getLocation().equals(point) == true) {
-                System.out.println("HIT = " + object.getType());
-                if (object.getType() == GridObjectType.APPLE) {
-                    score += 100;
-                    scores.add(new Score(object.getLocation(), 100));                    
-                    object.setLocation(randomPoint());
-                    snake.setGrowthCounter(1);
-                }
-                if (object.getType() == GridObjectType.POISON_BOTTLE) {
-                    score -= 200;
-                    scores.add(new Score(object.getLocation(), -200));
-                    object.setLocation(randomPoint());
-                    
-                }
-            }
-        }
-        
-        
-        return point;
     }
 //</editor-fold>
 
@@ -327,43 +289,75 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, Locati
     public Boolean getDrawGrid() {
         return drawGrid;
     }
-
+    
     public void setDrawGrid(Boolean gridDrawn) {
         this.drawGrid = gridDrawn;
     }
-
+    
     public void toggleDrawGrid() {
         drawGrid = !drawGrid;
     }
 //</editor-fold>
 
-    /**
-     * @return the snake2
-     */
-    public Snake getSnake2() {
-        return snake2;
+//<editor-fold defaultstate="collapsed" desc="SnakeLocationValidatorIntf">
+    @Override
+    public SnakeAndPoint validateLocation(SnakeAndPoint data) {
+        if (data.getPoint().x < 0) {
+            data.getPoint().x = grid.getColumns() - 1;
+        }
+        if (data.getPoint().x > grid.getColumns() - 1) {
+            data.getPoint().x = 0;
+        }
+        if (data.getPoint().y < 0) {
+            data.getPoint().y = grid.getRows() - 1;
+        }
+        if (data.getPoint().y > grid.getRows() - 1) {
+            data.getPoint().y = 0;
+        }
+        /**
+         * check if the snake hit a GridObject --Apple --Poison Look at all the
+         * locations stored in the gridObject ArrayList for each, compare to
+         * head loc.
+         */
+        for (GridObject object : gridObjects) {
+            if (object.getLocation().equals(data.getPoint()) == true) {
+                System.out.println("HIT = " + object.getType());
+                if (object.getType() == GridObjectType.APPLE) {
+                    data.getSnake().setScore(data.getSnake().getScore() + 100);
+                    scores.add(new Score(object.getLocation(), 100));                    
+                    object.setLocation(randomPoint());
+                    data.getSnake().grow(1);
+                }
+                if (object.getType() == GridObjectType.POISON_BOTTLE) {
+                    data.getSnake().setScore(data.getSnake().getScore() - 200);
+                    scores.add(new Score(object.getLocation(), -200));
+                    object.setLocation(randomPoint());
+                    AudioPlayer.play("/resources/grenade.wav");
+                }
+            }
+            for (Point body : snake.getBody()) {
+                if ((object.getLocation().equals(body))) {
+                    object.setLocation(randomPoint());
+                }
+            }
+            for (Point body : snake2.getBody()) {
+                if ((object.getLocation().equals(body))) {
+                    object.setLocation(randomPoint());
+                }
+            }
+            
+        }
+        
+        return data;
     }
-
-    /**
-     * @param snake2 the snake2 to set
-     */
-    public void setSnake2(Snake snake2) {
-        this.snake2 = snake2;
-    }
-
-    /**
-     * @return the score
-     */
+//</editor-fold>
+    
     public int getScore() {
         return score;
     }
-
-    /**
-     * @param score the score to set
-     */
+    
     public void setScore(int score) {
         this.score = score;
     }
     
-
 }
