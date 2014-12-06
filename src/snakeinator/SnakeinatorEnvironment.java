@@ -8,7 +8,6 @@ package snakeinator;
 import audio.AudioPlayer;
 import environment.Environment;
 import environment.GraphicsPalette;
-import environment.LocationValidatorIntf;
 import grid.Grid;
 import images.ResourceTools;
 import java.awt.Color;
@@ -26,28 +25,9 @@ import java.util.ArrayList;
  *
  * @author Benjamin Wong
  */
-class SnakeinatorEnvironment extends Environment implements GridDrawData, /**
-         * LocationValidatorIntf,
-         */
-        SnakeLocationValidatorIntf {
+class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeLocationValidatorIntf {
     
-    private Grid grid;
-    private Snake snake;
-    private Boolean drawGrid = true;
-    private Snake snake2;
-    private int score = 0;
-    private int score2 = 0;
-    
-    public final int SLOW_SPEED = 7;
-    public final int MEDIUM_SPEED = 5;
-    public final int HIGH_SPEED = 3;
-    
-    int moveDelayLimit = SLOW_SPEED;
-    int moveDelayCounter = 0;
-    int moveDelayCounter2 = 0;
-    
-    private ArrayList<GridObject> gridObjects;
-    private ArrayList<Score> scores;
+
     
     public SnakeinatorEnvironment() {
     }
@@ -236,10 +216,6 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, /**
                     GraphicsPalette.drawPoisonBottle(graphics, grid.getCellSystemCoordinate(gridObject.getLocation()),
                             grid.getCellSize(), Color.yellow);
                 }
-                if (gridObject.getType() == GridObjectType.BIOHAZARD) {
-                    snake.drawBiohazard(graphics, grid.getCellSystemCoordinate(gridObject.getLocation()),
-                            grid.getCellSize());
-                }
             }
         }
         for (Score score : scores) {
@@ -345,19 +321,26 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, /**
                     object.setLocation(randomPoint());
                 }
             }
-            
         }
-        
         return data;
     }
 //</editor-fold>
+        
+//<editor-fold defaultstate="collapsed" desc="Fields">
+    private Grid grid;
+    private Snake snake;
+    private Boolean drawGrid = true;
+    private Snake snake2;
     
-    public int getScore() {
-        return score;
-    }
+    public final int SLOW_SPEED = 7;
+    public final int MEDIUM_SPEED = 5;
+    public final int HIGH_SPEED = 3;
     
-    public void setScore(int score) {
-        this.score = score;
-    }
+    int moveDelayLimit = SLOW_SPEED;
+    int moveDelayCounter = 0;
+    int moveDelayCounter2 = 0;
     
+    private ArrayList<GridObject> gridObjects;
+    private ArrayList<Score> scores;
+//</editor-fold>
 }
