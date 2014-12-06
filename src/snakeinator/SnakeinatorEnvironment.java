@@ -26,22 +26,8 @@ import java.util.ArrayList;
  * @author Benjamin Wong
  */
 class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeLocationValidatorIntf {
-    
 
-    
     public SnakeinatorEnvironment() {
-    }
-    
-    public Point randomPoint() {
-        Point p = new Point((int) (Math.random() * grid.getColumns()), (int) (Math.random() * grid.getRows()));
-//        for (Point body : snake.getBody()) {
-//            for (Point body2 : snake.getBody()) {
-//                if (p == body || p == body2){
-//                    p = new Point((int) (Math.random() * grid.getColumns()), (int) (Math.random() * grid.getRows()));
-//                }
-//            }
-//        }
-        return p;
     }
 
 //<editor-fold defaultstate="collapsed" desc="initializeEnvironment">
@@ -49,7 +35,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
     public void initializeEnvironment() {
         this.setBackground(ResourceTools.loadImageFromResource("resources/background.jpg").getScaledInstance(1366, 768, Image.SCALE_SMOOTH));
         grid = new Grid(40, 25, 25, 25, new Point(50, 50), Color.RED);
-        scores = new ArrayList<Score>();
+        scores = new ArrayList<>();
         gridObjects = new ArrayList<>();
         gridObjects.add(new GridObject(GridObjectType.APPLE, randomPoint()));
         gridObjects.add(new GridObject(GridObjectType.APPLE, randomPoint()));
@@ -61,9 +47,8 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
         snake.setColorCode(255, 255, 255, 255);
         snake.setDirection(Direction.RIGHT);
         snake.setDrawData(this);
-//        snake.setLocationValidator(this);
         snake.setSnakeLocationValidator(this);
-        
+
         ArrayList<Point> body = new ArrayList<>();
         body.add(new Point(3, 1));
         body.add(new Point(3, 2));
@@ -77,9 +62,8 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
         snake2.setColorCode(0, 255, 0, 255);
         snake2.setDirection(Direction.RIGHT);
         snake2.setDrawData(this);
-//        snake2.setLocationValidator(this);
         snake2.setSnakeLocationValidator(this);
-        
+
         ArrayList<Point> body2 = new ArrayList<>();
         body2.add(new Point(2, 10));
         body2.add(new Point(3, 10));
@@ -189,6 +173,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
         g2d.setRenderingHint(
                 RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
         if (drawGrid) {
             if (grid != null) {
                 grid.paintComponent(graphics);
@@ -234,27 +219,27 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
     public int getCellHeight() {
         return grid.getCellHeight();
     }
-    
+
     @Override
     public int getCellWidth() {
         return grid.getCellWidth();
     }
-    
+
     @Override
     public Point getCellSystemCoordinate(Point cellCoordinate) {
         return grid.getCellSystemCoordinate(cellCoordinate);
     }
-    
+
     @Override
     public int getColumns() {
         return grid.getColumns();
     }
-    
+
     @Override
     public int getRows() {
         return grid.getRows();
     }
-    
+
     @Override
     public Point getRandomGridLocation() {
         return grid.getRandomGridLocation();
@@ -265,11 +250,11 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
     public Boolean getDrawGrid() {
         return drawGrid;
     }
-    
+
     public void setDrawGrid(Boolean gridDrawn) {
         this.drawGrid = gridDrawn;
     }
-    
+
     public void toggleDrawGrid() {
         drawGrid = !drawGrid;
     }
@@ -300,7 +285,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
                 System.out.println("HIT = " + object.getType());
                 if (object.getType() == GridObjectType.APPLE) {
                     data.getSnake().setScore(data.getSnake().getScore() + 100);
-                    scores.add(new Score(object.getLocation(), 100));                    
+                    scores.add(new Score(object.getLocation(), 100));
                     object.setLocation(randomPoint());
                     data.getSnake().grow(1);
                 }
@@ -325,22 +310,27 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
         return data;
     }
 //</editor-fold>
-        
+
 //<editor-fold defaultstate="collapsed" desc="Fields">
     private Grid grid;
     private Snake snake;
     private Boolean drawGrid = true;
     private Snake snake2;
-    
+
     public final int SLOW_SPEED = 7;
     public final int MEDIUM_SPEED = 5;
     public final int HIGH_SPEED = 3;
-    
+
     int moveDelayLimit = SLOW_SPEED;
     int moveDelayCounter = 0;
     int moveDelayCounter2 = 0;
-    
+
     private ArrayList<GridObject> gridObjects;
     private ArrayList<Score> scores;
 //</editor-fold>
+
+    public Point randomPoint() {
+        return new Point((int) (Math.random() * grid.getColumns()), (int) (Math.random() * grid.getRows()));
+    }
+    
 }
