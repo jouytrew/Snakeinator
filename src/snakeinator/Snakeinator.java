@@ -17,7 +17,7 @@ public class Snakeinator {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        ApplicationStarter.run("SnakeRevamped (WTH)", new SnakeinatorEnvironment());
+        ApplicationStarter.run("Snakeinator", new SnakeinatorEnvironment());
     }
 
 }

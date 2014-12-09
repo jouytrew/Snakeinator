@@ -5,12 +5,8 @@
  */
 package snakeinator;
 
-import environment.LocationValidatorIntf;
-import images.ResourceTools;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Point;
 import java.util.ArrayList;
 
@@ -47,7 +43,7 @@ public class Snake {
         int opacity = getMAX_OPACITY();
         int opacityStepSize = (getMAX_OPACITY() - getMIN_OPACITY()) / getBody().size();
 
-        for (Point bodySegmentLocation : getBody()) {
+        for (Point bodySegmentLocation : getSafeBody()) {
             Point topLeft = drawData.getCellSystemCoordinate(bodySegmentLocation);
             graphics.setColor(new Color(getRed(), getGreen(), getBlue(), opacity));
             graphics.fillOval(topLeft.x, topLeft.y, drawData.getCellWidth(), drawData.getCellHeight());
@@ -96,15 +92,20 @@ public class Snake {
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Methods">
+    public Snake(Direction direction, GridDrawData drawData, SnakeLocationValidatorIntf snakeLocationValidator) {
+        this.direction = direction;
+        this.drawData = drawData;
+        this.snakeLocationValidator = snakeLocationValidator;
+    }
+    
     public void togglePaused() {
         paused = !paused;
     }
     
-    public void setColorCode(int red, int green, int blue, int opac) {
+    public void setColorCode(int red, int green, int blue) {
         this.setRed(red);
         this.setGreen(green);
         this.setBlue(blue);
-        this.setOpac(opac);
     }
     
     public int getGrowthCounter() {
@@ -195,6 +196,14 @@ public class Snake {
         return body;
     }
     
+    private ArrayList<Point> getSafeBody() {
+        ArrayList<Point> safeBody = new ArrayList<>();
+        for (Point location : getBody()){
+            safeBody.add(location);
+        }
+        return safeBody;
+    }
+    
     public void setBody(ArrayList<Point> body) {
         this.body = body;
     }
@@ -219,5 +228,6 @@ public class Snake {
         return body.get(HEAD_POSITION);
     }
 //</editor-fold>
+
 
 }
