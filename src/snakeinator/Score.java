@@ -40,51 +40,30 @@ public class Score {
     private int score;
     private int timeLeft;
     
-    /**
-     * @return the position
-     */
     public Point getPosition() {
         return position;
     }
     
-    /**
-     * @param position the position to set
-     */
     public void setPosition(Point position) {
         this.position = position;
     }
     
-    /**
-     * @return the color
-     */
     public Color getColor() {
         return (score > 0) ? Color.GREEN : Color.RED;
     }
     
-    /**
-     * @return the score
-     */
     public int getScore() {
         return score;
     }
     
-    /**
-     * @param score the score to set
-     */
     public void setScore(int score) {
         this.score = score;
     }
     
-    /**
-     * @return the timeLeft
-     */
     public int getTimeLeft() {
         return timeLeft;
     }
     
-    /**
-     * @param timeLeft the timeLeft to set
-     */
     public void setTimeLeft(int timeLeft) {
         this.timeLeft = timeLeft;
     }

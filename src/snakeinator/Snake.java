@@ -31,8 +31,8 @@ public class Snake {
     private int growthCounter;
 
     private Color WHITE = Color.WHITE;
-    private int MAX_OPACITY = 255;
-    private int MIN_OPACITY = 50;
+    private double MAX_OPACITY = 255;
+    private double MIN_OPACITY = 30;
     private int score;
 
     public final int HEAD_POSITION = 0;
@@ -40,13 +40,13 @@ public class Snake {
 
 //<editor-fold defaultstate="collapsed" desc="Graphics Draw">
     public void draw(Graphics graphics) {
-        int opacity = getMAX_OPACITY();
-        int opacityStepSize = (getMAX_OPACITY() - getMIN_OPACITY()) / getSnake().size();
+        double opacity = getMAX_OPACITY();
+        double opacityStepSize = (getMAX_OPACITY() - getMIN_OPACITY()) / getSnake().size();
 
         for (Point bodySegmentLocation : getSafeSnake()) {
             Point topLeft = drawData.getCellSystemCoordinate(bodySegmentLocation);
-            graphics.setColor(new Color(getRed(), getGreen(), getBlue(), opacity));
-            graphics.fillOval(topLeft.x, topLeft.y, drawData.getCellWidth(), drawData.getCellHeight());
+            graphics.setColor(new Color(getRed(), getGreen(), getBlue(), (int) opacity));
+            graphics.fillRect(topLeft.x, topLeft.y, drawData.getCellWidth(), drawData.getCellHeight());
             opacity -= opacityStepSize;
         }
     }
@@ -100,6 +100,7 @@ public class Snake {
                 //remove everthing from position i onwards...?!?!?!
                 for (int j = snake.size() - 1; j >= i; j--) {
                     snake.remove(j);
+                    setScore(getScore() - 25);
                 }
                 break;
             }
@@ -134,7 +135,7 @@ public class Snake {
         growthCounter += length;
     }
 
-    public int getMAX_OPACITY() {
+    public double getMAX_OPACITY() {
         return MAX_OPACITY;
     }
 
@@ -142,7 +143,7 @@ public class Snake {
         this.MAX_OPACITY = MAX_OPACITY;
     }
 
-    public int getMIN_OPACITY() {
+    public double getMIN_OPACITY() {
         return MIN_OPACITY;
     }
 

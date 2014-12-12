@@ -10,5 +10,5 @@ package snakeinator;
  * @author Benjamin Wong
  */
 public enum GridObjectType {
-    APPLE, WALL, BEER, POISON_BOTTLE, BIOHAZARD
+    APPLE, WALL, BEER, POISON_BOTTLE, 
 }

@@ -26,7 +26,6 @@ public class GridObject {
     
     
     
-    
     //<editor-fold defaultstate="collapsed" desc="Properties">
     private GridObjectType type;
     private Point location;

@@ -36,6 +36,8 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
         this.setBackground(ResourceTools.loadImageFromResource("resources/background.jpg").getScaledInstance(1366, 768, Image.SCALE_SMOOTH));
         grid = new Grid(40, 25, 25, 25, new Point(50, 50), Color.RED);
         scores = new ArrayList<>();
+        safeScores = new ArrayList<>();
+        safeScores = getSafeScore();
 
         /**
          * First Snake
@@ -83,7 +85,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
         } else {
             moveDelayCounter2++;
         }
-        for (Score score : scores) {
+        for (Score score : getSafeScore()) {
             score.time();
         }
     }
@@ -198,10 +200,10 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
                 }
             }
         }
-        for (Score score : scores) {
+        for (Score score : getSafeScore()) {
             score.draw(graphics);
         }
-        for (Score score : scores) {
+        for (Score score : getSafeScore()) {
             if (score.getTimeLeft() <= 0) {
                 scores.remove(score);
             }
@@ -284,13 +286,13 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
                     data.getSnake().setScore(data.getSnake().getScore() + 100);
                     scores.add(new Score(object.getLocation(), 100));
 //                    gridObjects.remove(object);
-                    object.setLocation(randomGridLocation());
+                    object.setLocation(randomDeconflictedGridLocation());
                     data.getSnake().grow(1);
                 }
                 if (object.getType() == GridObjectType.POISON_BOTTLE) {
                     data.getSnake().setScore(data.getSnake().getScore() - 200);
                     scores.add(new Score(object.getLocation(), -200));
-                    object.setLocation(randomGridLocation());
+                    object.setLocation(randomDeconflictedGridLocation());
                     AudioPlayer.play("/resources/grenade.wav");
                 }
             }
@@ -315,6 +317,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
 
     private ArrayList<GridObject> gridObjects;
     private ArrayList<Score> scores;
+    private ArrayList<Score> safeScores;
 //</editor-fold>
 
     public Point randomGridLocation() {
@@ -323,7 +326,24 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
 
     public Point randomDeconflictedGridLocation() {
         Point location = randomGridLocation();
-        return (snake.contains(location) || snake2.contains(location)) ? randomDeconflictedGridLocation() : location;
+        return (snake.contains(location) || snake2.contains(location) || checkLocation(location)) ? randomDeconflictedGridLocation() : location;
+    }
+    
+    public boolean checkLocation(Point location) {
+        for (GridObject gridObject : gridObjects) {
+            if (location.equals(gridObject.getLocation())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private ArrayList<Score> getSafeScore() {
+        ArrayList<Score> safeScore = new ArrayList<>();
+        for (Score score : scores){
+            safeScore.add(score);
+        }
+        return safeScore;
     }
 
 }
