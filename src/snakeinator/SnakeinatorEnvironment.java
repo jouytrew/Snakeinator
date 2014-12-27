@@ -64,9 +64,8 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
         snake2.setGrowthCounter(3);
 
         gridObjects = new ArrayList<>();
-        gridObjects.add(new GridObject(GridObjectType.APPLE, randomGridLocation()));
-        gridObjects.add(new GridObject(GridObjectType.APPLE, randomGridLocation()));
-        gridObjects.add(new GridObject(GridObjectType.POISON_BOTTLE, randomGridLocation()));
+        addGridObject(GridObjectType.APPLE, 3);
+        addGridObject(GridObjectType.POISON_BOTTLE, 2);
     }
 //</editor-fold>
 
@@ -148,6 +147,11 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
         if (e.getKeyCode() == KeyEvent.VK_H) {
             snake2.setGrowthCounter(1);
         }
+        /** Clear screen of objects test code
+        if (e.getKeyCode() == KeyEvent.VK_C){
+            clearGridObjects();
+        }
+         */
     }
 //</editor-fold>
 
@@ -344,6 +348,16 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
             safeScore.add(score);
         }
         return safeScore;
+    }
+    
+    public void addGridObject(GridObjectType object, int i){
+        for (int j = 1; j <= i; j++) {
+            gridObjects.add(new GridObject(object, randomGridLocation()));
+        }
+    }
+    
+    public void clearGridObjects(){
+        gridObjects.clear();
     }
 
 }
