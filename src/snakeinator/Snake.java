@@ -35,7 +35,7 @@ public class Snake {
     private double MIN_OPACITY = 30;
     private int score;
 
-    public final int HEAD_POSITION = 0;
+    static public final int HEAD_POSITION = 0;
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="Graphics Draw">
@@ -106,6 +106,7 @@ public class Snake {
             }
         }
     }
+    
 
     public Snake(Direction direction, GridDrawData drawData, SnakeLocationValidatorIntf snakeLocationValidator) {
         this.direction = direction;
@@ -260,5 +261,6 @@ public class Snake {
         return false;
     }
 //</editor-fold>
+
 
 }

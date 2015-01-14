@@ -33,6 +33,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
 //<editor-fold defaultstate="collapsed" desc="initializeEnvironment">
     @Override
     public void initializeEnvironment() {
+        
         this.setBackground(ResourceTools.loadImageFromResource("resources/background.jpg").getScaledInstance(1366, 768, Image.SCALE_SMOOTH));
         grid = new Grid(40, 25, 25, 25, new Point(50, 50), Color.RED);
         scores = new ArrayList<>();
@@ -42,19 +43,20 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
         /**
          * First Snake
          */
-        snake = new Snake(Direction.RIGHT, this, this);
+//        snake = new Snake(Direction.RIGHT, this, this);
+        snake = new ChainSnake(Direction.RIGHT, this, this);
         snake.setColorCode(255, 255, 255);
 
         ArrayList<Point> body = new ArrayList<>();
         body.add(new Point(2, 2));
         snake.setSnake(body);
-
         snake.setGrowthCounter(3);
 
         /**
          * End of First Snake Snake 2 below
          */
-        snake2 = new Snake(Direction.RIGHT, this, this);
+//        snake2 = new Snake(Direction.RIGHT, this, this);
+        snake2 = new ChainSnake(Direction.RIGHT, this, this);
         snake2.setColorCode(0, 255, 0);
 
         ArrayList<Point> body2 = new ArrayList<>();
@@ -64,8 +66,9 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
         snake2.setGrowthCounter(3);
 
         gridObjects = new ArrayList<>();
-        addGridObject(GridObjectType.APPLE, 3);
-        addGridObject(GridObjectType.POISON_BOTTLE, 2);
+
+        addGridObject(GridObjectType.APPLE, 5);
+        addGridObject(GridObjectType.POISON_BOTTLE, 0);
     }
 //</editor-fold>
 
@@ -147,10 +150,9 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
         if (e.getKeyCode() == KeyEvent.VK_H) {
             snake2.setGrowthCounter(1);
         }
-        /** Clear screen of objects test code
-        if (e.getKeyCode() == KeyEvent.VK_C){
-            clearGridObjects();
-        }
+        /**
+         * Clear screen of objects test code if (e.getKeyCode() ==
+         * KeyEvent.VK_C){ clearGridObjects(); }
          */
     }
 //</editor-fold>
@@ -265,7 +267,6 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
     @Override
     public SnakeAndPoint validateLocation(SnakeAndPoint data) {
         data.getSnake().checkSelfHit();
-        
         if (data.getPoint().x < 0) {
             data.getPoint().x = grid.getColumns() - 1;
         }
@@ -289,7 +290,6 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
                 if (object.getType() == GridObjectType.APPLE) {
                     data.getSnake().setScore(data.getSnake().getScore() + 100);
                     scores.add(new Score(object.getLocation(), 100));
-//                    gridObjects.remove(object);
                     object.setLocation(randomDeconflictedGridLocation());
                     data.getSnake().grow(1);
                 }
@@ -332,7 +332,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
         Point location = randomGridLocation();
         return (snake.contains(location) || snake2.contains(location) || checkLocation(location)) ? randomDeconflictedGridLocation() : location;
     }
-    
+
     public boolean checkLocation(Point location) {
         for (GridObject gridObject : gridObjects) {
             if (location.equals(gridObject.getLocation())) {
@@ -344,19 +344,19 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
 
     private ArrayList<Score> getSafeScore() {
         ArrayList<Score> safeScore = new ArrayList<>();
-        for (Score score : scores){
+        for (Score score : scores) {
             safeScore.add(score);
         }
         return safeScore;
     }
-    
-    public void addGridObject(GridObjectType object, int i){
-        for (int j = 1; j <= i; j++) {
-            gridObjects.add(new GridObject(object, randomGridLocation()));
+
+    public void addGridObject(GridObjectType objectType, int i) {
+        for (int j = 0; j < i; j++) {
+            gridObjects.add(new GridObject(objectType, randomGridLocation()));
         }
     }
-    
-    public void clearGridObjects(){
+
+    public void clearGridObjects() {
         gridObjects.clear();
     }
 

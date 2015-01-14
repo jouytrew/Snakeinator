@@ -23,9 +23,6 @@ public class GridObject {
         this.location = new Point(x, y);
     }
     
-    
-    
-    
     //<editor-fold defaultstate="collapsed" desc="Properties">
     private GridObjectType type;
     private Point location;
