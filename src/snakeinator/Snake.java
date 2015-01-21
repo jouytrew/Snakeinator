@@ -20,9 +20,9 @@ public class Snake {
     private ArrayList<Point> snake = new ArrayList<>();
     private Direction direction = Direction.RIGHT;
     private GridDrawData drawData;
-    private Boolean gamePlaying = true;
+    private boolean gamePlaying = true;
     private SnakeLocationValidatorIntf snakeLocationValidator;
-    private Boolean paused = false;
+    private Direction noMove = null;
 
     private int red;
     private int green;
@@ -55,28 +55,31 @@ public class Snake {
 //<editor-fold defaultstate="collapsed" desc="Movements">
     public void move() {
 //make the snake move
-        if (!paused) {
-            Point newHead = (Point) getHead().clone();
-            if (direction == Direction.DOWN) {
-                newHead.y++;
-            }
-            if (direction == Direction.RIGHT) {
-                newHead.x++;
-            }
-            if (direction == Direction.UP) {
-                newHead.y--;
-            }
-            if (direction == Direction.LEFT) {
-                newHead.x--;
-            }
-            if (snakeLocationValidator != null) {
-                snake.add(HEAD_POSITION, getSnakeLocationValidator().validateLocation(new SnakeAndPoint(this, newHead)).getPoint());
-            }
-            if (growthCounter <= 0) {
-                snake.remove(snake.size() - 1);
-            } else {
-                growthCounter--;
-            }
+        Point newHead = (Point) getHead().clone();
+        if (direction == Direction.DOWN) {
+            newHead.y++;
+            setNoMove(Direction.UP);
+        }
+        if (direction == Direction.RIGHT) {
+            newHead.x++;
+            setNoMove(Direction.LEFT);
+        }
+        if (direction == Direction.UP) {
+            newHead.y--;
+            setNoMove(Direction.DOWN);
+        }
+        if (direction == Direction.LEFT) {
+            newHead.x--;
+            setNoMove(Direction.RIGHT);
+        }
+        if (snakeLocationValidator != null) {
+            snake.add(HEAD_POSITION, getSnakeLocationValidator().validateLocation(new SnakeAndPoint(this, newHead)).getPoint());
+        }
+        if (growthCounter <= 0) {
+            snake.remove(snake.size() - 1);
+        } else {
+            growthCounter--;
+
         }
     }
     //</editor-fold>
@@ -106,16 +109,11 @@ public class Snake {
             }
         }
     }
-    
 
     public Snake(Direction direction, GridDrawData drawData, SnakeLocationValidatorIntf snakeLocationValidator) {
         this.direction = direction;
         this.drawData = drawData;
         this.snakeLocationValidator = snakeLocationValidator;
-    }
-
-    public void togglePaused() {
-        paused = !paused;
     }
 
     public void setColorCode(int red, int green, int blue) {
@@ -262,5 +260,18 @@ public class Snake {
     }
 //</editor-fold>
 
+    /**
+     * @return the noMove
+     */
+    public Direction getNoMove() {
+        return noMove;
+    }
+
+    /**
+     * @param noMove the noMove to set
+     */
+    public void setNoMove(Direction noMove) {
+        this.noMove = noMove;
+    }
 
 }

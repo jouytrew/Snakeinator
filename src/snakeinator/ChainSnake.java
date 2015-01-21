@@ -125,8 +125,7 @@ public class ChainSnake extends Snake {
             yBar[2] = previousCellCoM.y;
             yBar[3] = yBar[2];
             graphics.fillPolygon(xBar, yBar, 4);
-        }
-        else if ((cellCoM.y - previousCellCoM.y) > getDrawData().getCellHeight()) {
+        } else if ((cellCoM.y - previousCellCoM.y) > getDrawData().getCellHeight()) {
             int[] xBar1 = new int[4];
             xBar1[0] = cellCoM.x + size/2;
             xBar1[1] = xBar1[0];
@@ -197,7 +196,6 @@ public class ChainSnake extends Snake {
 
     static public final int HEAD_POSITION = 0;
 //</editor-fold>
-    
     
     @Override
     public void setColorCode(int red, int green, int blue) {

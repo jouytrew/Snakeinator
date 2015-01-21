@@ -33,7 +33,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
 //<editor-fold defaultstate="collapsed" desc="initializeEnvironment">
     @Override
     public void initializeEnvironment() {
-        
+
         this.setBackground(ResourceTools.loadImageFromResource("resources/background.jpg").getScaledInstance(1366, 768, Image.SCALE_SMOOTH));
         grid = new Grid(40, 25, 25, 25, new Point(50, 50), Color.RED);
         scores = new ArrayList<>();
@@ -62,12 +62,11 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
         ArrayList<Point> body2 = new ArrayList<>();
         body2.add(new Point(2, 10));
         snake2.setSnake(body2);
-
         snake2.setGrowthCounter(3);
 
-        gridObjects = new ArrayList<>();
+        gridObjects = new GridObjects();
 
-        addGridObject(GridObjectType.APPLE, 5);
+        addGridObject(GridObjectType.APPLE, 15);
         addGridObject(GridObjectType.POISON_BOTTLE, 0);
     }
 //</editor-fold>
@@ -75,20 +74,22 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
 //<editor-fold defaultstate="collapsed" desc="timerTaskHandler">
     @Override
     public void timerTaskHandler() {
-        if (snake != null && (moveDelayCounter2 >= moveDelayLimit)) {
-            snake.move();
-            moveDelayCounter = 0;
-        } else {
-            moveDelayCounter++;
-        }
-        if (snake2 != null && (moveDelayCounter2 >= moveDelayLimit)) {
-            snake2.move();
-            moveDelayCounter2 = 0;
-        } else {
-            moveDelayCounter2++;
-        }
-        for (Score score : getSafeScore()) {
-            score.time();
+        if (!paused) {
+            if (snake != null && (moveDelayCounter2 >= moveDelayLimit)) {
+                snake.move();
+                moveDelayCounter = 0;
+            } else {
+                moveDelayCounter++;
+            }
+            if (snake2 != null && (moveDelayCounter2 >= moveDelayLimit)) {
+                snake2.move();
+                moveDelayCounter2 = 0;
+            } else {
+                moveDelayCounter2++;
+            }
+            for (Score score : getSafeScore()) {
+                score.time();
+            }
         }
     }
 //</editor-fold>
@@ -105,8 +106,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
          * pauses snakes `/~ Key toggles grid coordinate display
          */
         if (e.getKeyCode() == KeyEvent.VK_P) {
-            snake.togglePaused();
-            snake2.togglePaused();
+            this.togglePaused();
         }
         if (e.getKeyCode() == KeyEvent.VK_O) {
             toggleDrawGrid();
@@ -114,29 +114,31 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
         if (e.getKeyCode() == KeyEvent.VK_M) {
             AudioPlayer.play("/resources/grenade.wav");
         }
-        if (e.getKeyCode() == KeyEvent.VK_A && (snake.getDirection() != Direction.RIGHT)) {
-            snake.setDirection(Direction.LEFT);
-        }
-        if (e.getKeyCode() == KeyEvent.VK_D && (snake.getDirection() != Direction.LEFT)) {
-            snake.setDirection(Direction.RIGHT);
-        }
-        if (e.getKeyCode() == KeyEvent.VK_S && (snake.getDirection() != Direction.UP)) {
-            snake.setDirection(Direction.DOWN);
-        }
-        if (e.getKeyCode() == KeyEvent.VK_W && (snake.getDirection() != Direction.DOWN)) {
-            snake.setDirection(Direction.UP);
-        }
-        if (e.getKeyCode() == KeyEvent.VK_LEFT && (snake2.getDirection() != Direction.RIGHT)) {
-            snake2.setDirection(Direction.LEFT);
-        }
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT && (snake2.getDirection() != Direction.LEFT)) {
-            snake2.setDirection(Direction.RIGHT);
-        }
-        if (e.getKeyCode() == KeyEvent.VK_DOWN && (snake2.getDirection() != Direction.UP)) {
-            snake2.setDirection(Direction.DOWN);
-        }
-        if (e.getKeyCode() == KeyEvent.VK_UP && (snake2.getDirection() != Direction.DOWN)) {
-            snake2.setDirection(Direction.UP);
+        if (!paused) {
+            if (e.getKeyCode() == KeyEvent.VK_A && (snake.getNoMove() != Direction.LEFT)) {
+                snake.setDirection(Direction.LEFT);
+            }
+            if (e.getKeyCode() == KeyEvent.VK_D && (snake.getNoMove() != Direction.RIGHT)) {
+                snake.setDirection(Direction.RIGHT);
+            }
+            if (e.getKeyCode() == KeyEvent.VK_S && (snake.getNoMove() != Direction.DOWN)) {
+                snake.setDirection(Direction.DOWN);
+            }
+            if (e.getKeyCode() == KeyEvent.VK_W && (snake.getNoMove() != Direction.UP)) {
+                snake.setDirection(Direction.UP);
+            }
+            if (e.getKeyCode() == KeyEvent.VK_LEFT && (snake2.getNoMove() != Direction.LEFT)) {
+                snake2.setDirection(Direction.LEFT);
+            }
+            if (e.getKeyCode() == KeyEvent.VK_RIGHT && (snake2.getNoMove() != Direction.RIGHT)) {
+                snake2.setDirection(Direction.RIGHT);
+            }
+            if (e.getKeyCode() == KeyEvent.VK_DOWN && (snake2.getNoMove() != Direction.DOWN)) {
+                snake2.setDirection(Direction.DOWN);
+            }
+            if (e.getKeyCode() == KeyEvent.VK_UP && (snake2.getNoMove() != Direction.UP)) {
+                snake2.setDirection(Direction.UP);
+            }
         }
     }
 //</editor-fold>
@@ -166,6 +168,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
 //<editor-fold defaultstate="collapsed" desc="PaintEnvironment">
     @Override
     public void paintEnvironment(Graphics graphics) {
+        //<editor-fold defaultstate="collapsed" desc="antiAlias">
         /**
          * Graphics 2D used to anti-alias images/shapes
          */
@@ -176,43 +179,72 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
         g2d.setRenderingHint(
                 RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+//</editor-fold>
+        switch (getGameState()) {
+            //<editor-fold defaultstate="collapsed" desc="GameState : START">
+            case START:
 
-        if (drawGrid) {
-            if (grid != null) {
-                grid.paintComponent(graphics);
-            }
-        }
-        if (snake != null) {
-            snake.draw(graphics);
-            graphics.setFont(new Font("Courier New", Font.PLAIN, 12));
-            graphics.setColor(new Color(snake.getRed(), snake.getGreen(), snake.getBlue()));
-            graphics.drawString("Snake 1: " + snake.getScore(), 5, 12);
-        }
-        if (snake2 != null) {
-            snake2.draw(graphics);
-            graphics.setFont(new Font("Courier New", Font.PLAIN, 12));
-            graphics.setColor(new Color(snake2.getRed(), snake2.getGreen(), snake2.getBlue()));
-            graphics.drawString("Snake 2: " + snake2.getScore(), 5, 24);
-        }
-        if (gridObjects != null) {
-            for (GridObject gridObject : gridObjects) {
-                if (gridObject.getType() == GridObjectType.APPLE) {
-                    GraphicsPalette.drawApple(graphics, grid.getCellSystemCoordinate(gridObject.getLocation()),
-                            grid.getCellSize(), Color.RED);
+                break;
+//</editor-fold>
+
+            //<editor-fold defaultstate="collapsed" desc="GameState : PLAYING">
+            case PLAYING:
+                if (drawGrid) {
+                    if (grid != null) {
+                        grid.paintComponent(graphics);
+                    }
                 }
-                if (gridObject.getType() == GridObjectType.POISON_BOTTLE) {
-                    GraphicsPalette.drawPoisonBottle(graphics, grid.getCellSystemCoordinate(gridObject.getLocation()),
-                            grid.getCellSize(), Color.yellow);
+                for (Point clearAreaPoint : getSafeClearArea()){
+                    Point topLeft = grid.getCellSystemCoordinate(clearAreaPoint);
+                    graphics.setColor(new Color(255, 0, 0, 50));
+                    graphics.fillRect(topLeft.x, topLeft.y, grid.getCellWidth(), grid.getCellHeight());
                 }
-            }
-        }
-        for (Score score : getSafeScore()) {
-            score.draw(graphics);
-        }
-        for (Score score : getSafeScore()) {
-            if (score.getTimeLeft() <= 0) {
-                scores.remove(score);
-            }
+                if (snake != null) {
+                    snake.draw(graphics);
+                    graphics.setFont(new Font("Courier New", Font.PLAIN, 12));
+                    graphics.setColor(new Color(snake.getRed(), snake.getGreen(), snake.getBlue()));
+                    graphics.drawString("Snake 1: " + snake.getScore(), 5, 12);
+                }
+                if (snake2 != null) {
+                    snake2.draw(graphics);
+                    graphics.setFont(new Font("Courier New", Font.PLAIN, 12));
+                    graphics.setColor(new Color(snake2.getRed(), snake2.getGreen(), snake2.getBlue()));
+                    graphics.drawString("Snake 2: " + snake2.getScore(), 5, 24);
+                }
+                if (gridObjects != null) {
+                    for (GridObject gridObject : gridObjects.getObjects()) {
+                        if (gridObject.getType() == GridObjectType.APPLE) {
+                            GraphicsPalette.drawApple(graphics, grid.getCellSystemCoordinate(gridObject.getLocation()),
+                                    grid.getCellSize(), Color.RED);
+                        }
+                        if (gridObject.getType() == GridObjectType.POISON_BOTTLE) {
+                            GraphicsPalette.drawPoisonBottle(graphics, grid.getCellSystemCoordinate(gridObject.getLocation()),
+                                    grid.getCellSize(), Color.yellow);
+                        }
+                    }
+                }
+                for (Score score : getSafeScore()) {
+                    score.draw(graphics);
+                }
+                for (Score score : getSafeScore()) {
+                    if (score.getTimeLeft() <= 0) {
+                        scores.remove(score);
+                    }
+                }
+                break;
+//</editor-fold>
+
+            //<editor-fold defaultstate="collapsed" desc="GameState : PAUSED">
+            case PAUSED:
+
+                break;
+//</editor-fold>
+
+            //<editor-fold defaultstate="collapsed" desc="GameState : GG">
+            case GG:
+
+                break;
+//</editor-fold>
         }
     }
 //</editor-fold>
@@ -279,12 +311,13 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
         if (data.getPoint().y > grid.getRows() - 1) {
             data.getPoint().y = 0;
         }
+        createClearArea(data.getPoint(), data.getSnake().getDirection());
         /**
          * check if the snake hit a GridObject --Apple --Poison Look at all the
          * locations stored in the gridObject ArrayList for each, compare to
          * head loc.
          */
-        for (GridObject object : gridObjects) {
+        for (GridObject object : gridObjects.getObjects()) {
             if (object.getLocation().equals(data.getPoint()) == true) {
                 System.out.println("HIT = " + object.getType());
                 if (object.getType() == GridObjectType.APPLE) {
@@ -292,8 +325,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
                     scores.add(new Score(object.getLocation(), 100));
                     object.setLocation(randomDeconflictedGridLocation());
                     data.getSnake().grow(1);
-                }
-                if (object.getType() == GridObjectType.POISON_BOTTLE) {
+                } else if (object.getType() == GridObjectType.POISON_BOTTLE) {
                     data.getSnake().setScore(data.getSnake().getScore() - 200);
                     scores.add(new Score(object.getLocation(), -200));
                     object.setLocation(randomDeconflictedGridLocation());
@@ -308,8 +340,12 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
 //<editor-fold defaultstate="collapsed" desc="Fields">
     private Grid grid;
     private Snake snake;
-    private Boolean drawGrid = true;
+    private boolean drawGrid = true;
+    public boolean paused = true;
     private Snake snake2;
+    private GameState gameState = GameState.PLAYING;
+    private ArrayList<Point> clearArea = new ArrayList<>();
+    private boolean clearSafePoint = true;
 
     public final int SLOW_SPEED = 7;
     public final int MEDIUM_SPEED = 5;
@@ -319,7 +355,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
     int moveDelayCounter = 0;
     int moveDelayCounter2 = 0;
 
-    private ArrayList<GridObject> gridObjects;
+    private GridObjects gridObjects;
     private ArrayList<Score> scores;
     private ArrayList<Score> safeScores;
 //</editor-fold>
@@ -330,16 +366,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
 
     public Point randomDeconflictedGridLocation() {
         Point location = randomGridLocation();
-        return (snake.contains(location) || snake2.contains(location) || checkLocation(location)) ? randomDeconflictedGridLocation() : location;
-    }
-
-    public boolean checkLocation(Point location) {
-        for (GridObject gridObject : gridObjects) {
-            if (location.equals(gridObject.getLocation())) {
-                return true;
-            }
-        }
-        return false;
+        return (snake.contains(location) || snake2.contains(location) || gridObjects.getObjectLocations().contains(location) || clearArea.contains(location)) ? randomDeconflictedGridLocation() : location;
     }
 
     private ArrayList<Score> getSafeScore() {
@@ -352,12 +379,109 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
 
     public void addGridObject(GridObjectType objectType, int i) {
         for (int j = 0; j < i; j++) {
-            gridObjects.add(new GridObject(objectType, randomGridLocation()));
+            gridObjects.getObjects().add(new GridObject(objectType, randomGridLocation()));
         }
     }
 
     public void clearGridObjects() {
+//        gridObjects.getObjects().clear();
         gridObjects.clear();
+    }
+
+    public void togglePaused() {
+        paused = !paused;
+    }
+
+    private void createClearArea(Point head, Direction direction) {
+        /** 
+         *  Creates 5*3 box in the direction the snake is moving that objects cannot spawn in
+         */
+        if (doClearSafePoint()){
+            clearArea.clear();
+            setClearSafePoint(false);
+        } else {
+            setClearSafePoint(true);
+        }
+//        clearArea.clear();
+        if (direction == Direction.UP){
+            for (int i = 0; i <=4; i++){
+                getClearArea().add(new Point((head.x - 1 + grid.getColumns()) % grid.getColumns(), (head.y - i + grid.getRows()) % grid.getRows()));
+                getClearArea().add(new Point((head.x + grid.getColumns()) % grid.getColumns(), (head.y - i + grid.getRows()) % grid.getRows()));
+                getClearArea().add(new Point((head.x + 1 + grid.getColumns()) % grid.getColumns(), (head.y - i + grid.getRows()) % grid.getRows()));
+            }
+        }
+        if (direction == Direction.DOWN){
+            for (int i = 0; i <= 4; i++){
+                getClearArea().add(new Point((head.x - 1 + grid.getColumns()) % grid.getColumns(), (head.y + i + grid.getRows()) % grid.getRows()));
+                getClearArea().add(new Point((head.x + grid.getColumns()) % grid.getColumns(), (head.y + i + grid.getRows()) % grid.getRows()));
+                getClearArea().add(new Point((head.x + 1 + grid.getColumns()) % grid.getColumns(), (head.y + i + grid.getRows()) % grid.getRows()));
+            }
+        }
+        if (direction == Direction.RIGHT){
+            for (int i = 0; i <= 4; i++){
+                getClearArea().add(new Point((head.x + i + grid.getColumns()) % grid.getColumns(), (head.y - 1 + grid.getRows()) % grid.getRows()));
+                getClearArea().add(new Point((head.x + i + grid.getColumns()) % grid.getColumns(), (head.y + grid.getRows()) % grid.getRows()));
+                getClearArea().add(new Point((head.x + i + grid.getColumns()) % grid.getColumns(), (head.y + 1 + grid.getRows()) % grid.getRows()));
+            }
+        }
+        if (direction == Direction.LEFT){
+            for (int i = 0; i <= 4; i++){
+                getClearArea().add(new Point((head.x - i + grid.getColumns()) % grid.getColumns(), (head.y - 1 + grid.getRows()) % grid.getRows()));
+                getClearArea().add(new Point((head.x - i + grid.getColumns()) % grid.getColumns(), (head.y + grid.getRows()) % grid.getRows()));
+                getClearArea().add(new Point((head.x - i + grid.getColumns()) % grid.getColumns(), (head.y + 1 + grid.getRows()) % grid.getRows()));
+            }
+        }
+
+    }
+
+    /**
+     * @return the gameState
+     */
+    public GameState getGameState() {
+        return gameState;
+    }
+
+    /**
+     * @param gameState the gameState to set
+     */
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
+    }
+
+    /**
+     * @return the clearArea
+     */
+    public ArrayList<Point> getClearArea() {
+        return clearArea;
+    }
+
+    /**
+     * @param clearArea the clearArea to set
+     */
+    public void setClearArea(ArrayList<Point> clearArea) {
+        this.clearArea = clearArea;
+    }
+    
+    public ArrayList<Point> getSafeClearArea() {
+        ArrayList<Point> safeClearArea = new ArrayList<>();
+        for (Point clearAreaPoint : clearArea){
+            safeClearArea.add(clearAreaPoint);
+        }
+        return safeClearArea;
+    }
+
+    /**
+     * @return the clearSafePoint
+     */
+    public boolean doClearSafePoint() {
+        return clearSafePoint;
+    }
+
+    /**
+     * @param clearSafePoint the clearSafePoint to set
+     */
+    public void setClearSafePoint(boolean clearSafePoint) {
+        this.clearSafePoint = clearSafePoint;
     }
 
 }
