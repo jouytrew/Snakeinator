@@ -97,9 +97,6 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
 //<editor-fold defaultstate="collapsed" desc="keyPressedHandler">
     @Override
     public void keyPressedHandler(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_BACK_QUOTE) {
-            grid.setShowCellCoordinates(!grid.getShowCellCoordinates());
-        }
         /**
          * Second snake needs second set of controls Use WASD keys to control
          * snake Use arrow keys to control snake2 O Key turns the grid off P Key

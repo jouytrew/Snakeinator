@@ -1,0 +1,143 @@
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/GameLibrary/!svn/ver/121/GameLibrary/src/environment
+END
+GraphicsPalette.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/GameLibrary/!svn/ver/78/GameLibrary/src/environment/GraphicsPalette.java
+END
+Movable.java
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/GameLibrary/!svn/ver/84/GameLibrary/src/environment/Movable.java
+END
+GridStructure.java
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/GameLibrary/!svn/ver/74/GameLibrary/src/environment/GridStructure.java
+END
+StaticPaintable.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/GameLibrary/!svn/ver/19/GameLibrary/src/environment/StaticPaintable.java
+END
+Physics.java
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/GameLibrary/!svn/ver/98/GameLibrary/src/environment/Physics.java
+END
+Grid.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/GameLibrary/!svn/ver/105/GameLibrary/src/environment/Grid.java
+END
+PhysicsObject.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/GameLibrary/!svn/ver/111/GameLibrary/src/environment/PhysicsObject.java
+END
+Rotatable.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/GameLibrary/!svn/ver/3/GameLibrary/src/environment/Rotatable.java
+END
+IntersectionHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/GameLibrary/!svn/ver/110/GameLibrary/src/environment/IntersectionHandler.java
+END
+SimpleBackground.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/GameLibrary/!svn/ver/18/GameLibrary/src/environment/SimpleBackground.java
+END
+ApplicationStarter.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/GameLibrary/!svn/ver/30/GameLibrary/src/environment/ApplicationStarter.java
+END
+Direction.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/GameLibrary/!svn/ver/41/GameLibrary/src/environment/Direction.java
+END
+Range.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/GameLibrary/!svn/ver/3/GameLibrary/src/environment/Range.java
+END
+Velocity.java
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/GameLibrary/!svn/ver/3/GameLibrary/src/environment/Velocity.java
+END
+LocationValidator.java
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/GameLibrary/!svn/ver/61/GameLibrary/src/environment/LocationValidator.java
+END
+Counter.java
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/GameLibrary/!svn/ver/3/GameLibrary/src/environment/Counter.java
+END
+Intersectable.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/GameLibrary/!svn/ver/109/GameLibrary/src/environment/Intersectable.java
+END
+Paintable.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/GameLibrary/!svn/ver/17/GameLibrary/src/environment/Paintable.java
+END
+Actor.java
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/GameLibrary/!svn/ver/103/GameLibrary/src/environment/Actor.java
+END
+Vector2D.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/GameLibrary/!svn/ver/107/GameLibrary/src/environment/Vector2D.java
+END
+Region.java
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/GameLibrary/!svn/ver/108/GameLibrary/src/environment/Region.java
+END
+Environment.java
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/GameLibrary/!svn/ver/121/GameLibrary/src/environment/Environment.java
+END
+DurationTimer.java
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/GameLibrary/!svn/ver/76/GameLibrary/src/environment/DurationTimer.java
+END
