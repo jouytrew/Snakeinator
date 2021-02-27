@@ -18,7 +18,7 @@ public class Snake {
 
     //<editor-fold defaultstate="collapsed" desc="Fields">
     private ArrayList<Point> snake = new ArrayList<>();
-    private Direction direction = Direction.RIGHT;
+    private Direction direction;
     private GridDrawData drawData;
     private boolean gamePlaying = true;
     private SnakeLocationValidatorIntf snakeLocationValidator;
@@ -91,7 +91,7 @@ public class Snake {
         for (Point bodyPart : getBody()) {
             i++;
             if (getHead().equals(bodyPart)) {
-                //remove everthing from position i onwards...?!?!?!
+                //remove everything from position i onwards...?!?!?!
                 for (int j = snake.size() - 1; j >= i; j--) {
                     snake.remove(j);
                     setScore(getScore() - 25);
@@ -161,9 +161,7 @@ public class Snake {
 
     private ArrayList<Point> getSafeSnake() {
         ArrayList<Point> safeBody = new ArrayList<>();
-        for (Point location : getSnake()) {
-            safeBody.add(location);
-        }
+        safeBody.addAll(getSnake());
         return safeBody;
     }
 
