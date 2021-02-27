@@ -35,25 +35,18 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
     public void initializeEnvironment() {
 
         this.setBackground(ResourceTools.loadImageFromResource("resources/background.jpg").getScaledInstance(1366, 768, Image.SCALE_SMOOTH));
+
         grid = new Grid(40, 25, 25, 25, new Point(50, 50), Color.RED);
         scores = new ArrayList<>();
 
-        /**
-         * First Snake
-         */
-//        snake = new Snake(Direction.RIGHT, this, this);
         snake = new ChainSnake(new Point(2, 2), Direction.RIGHT, new Color(255, 255, 255), this, this);
-
-        /**
-         * End of First Snake Snake 2 below
-         */
-//        snake2 = new Snake(Direction.RIGHT, this, this);
         snake2 = new ChainSnake(new Point(2, 10), Direction.RIGHT, new Color(0, 255, 0), this, this);
 
         gridObjects = new GridObjects();
 
         addGridObject(GridObjectType.APPLE, 15);
         addGridObject(GridObjectType.POISON_BOTTLE, 2);
+
     }
 //</editor-fold>
 
@@ -353,8 +346,8 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
                 gridObjects.getObjectLocations().contains(location) || clearArea.contains(location)) ? randomDeconflictedGridLocation() : location;
     }
 
-    public void addGridObject(GridObjectType objectType, int i) {
-        for (int j = 0; j < i; j++) {
+    public void addGridObject(GridObjectType objectType, int count) {
+        for (int i = 0; i < count; i++) {
             gridObjects.getObjects().add(new GridObject(objectType, randomGridLocation()));
         }
     }
@@ -371,13 +364,13 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
         /** 
          *  Creates 5*3 box in the direction the snake is moving that objects cannot spawn in
          */
-        if (doClearSafePoint()){
+        if (doClearSafePoint()){ // This is here so that the clear areas for both snakes can be generated. Without this only one snake's clear area will be generated
             clearArea.clear();
             setClearSafePoint(false);
         } else {
             setClearSafePoint(true);
         }
-//        clearArea.clear();
+
         if (direction == Direction.UP){
             for (int i = 0; i <=4; i++){
                 getClearArea().add(new Point((head.x - 1 + grid.getColumns()) % grid.getColumns(), (head.y - i + grid.getRows()) % grid.getRows()));
