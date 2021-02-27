@@ -51,7 +51,14 @@ public class ChainSnake extends Snake {
         }
     }
     
-//<editor-fold defaultstate="collapsed" desc="fillBar">
+    //<editor-fold defaultstate="collapsed" desc="fillBar">
+    /**
+     * TODO: please write docs for this
+     * @param graphics
+     * @param cellCoM
+     * @param previousCellCoM
+     * @param size
+     */
     private void fillBar(Graphics graphics, Point cellCoM, Point previousCellCoM, int size) {
         graphics.setColor(getColor());
         if (abs(cellCoM.x - previousCellCoM.x) == getDrawData().getCellWidth()){

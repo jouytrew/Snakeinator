@@ -67,7 +67,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
         gridObjects = new GridObjects();
 
         addGridObject(GridObjectType.APPLE, 15);
-        addGridObject(GridObjectType.POISON_BOTTLE, 0);
+        addGridObject(GridObjectType.POISON_BOTTLE, 2);
     }
 //</editor-fold>
 
@@ -75,18 +75,15 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
     @Override
     public void timerTaskHandler() {
         if (!paused) {
-            if (snake != null && (moveDelayCounter2 >= moveDelayLimit)) {
-                snake.move();
-                moveDelayCounter = 0;
-            } else {
-                moveDelayCounter++;
+            if(moveDelayCounter % moveDelayLimit == 0) {
+                if (snake != null) {
+                    snake.move();
+                }
+                if (snake2 != null) {
+                    snake2.move();
+                }
             }
-            if (snake2 != null && (moveDelayCounter2 >= moveDelayLimit)) {
-                snake2.move();
-                moveDelayCounter2 = 0;
-            } else {
-                moveDelayCounter2++;
-            }
+            moveDelayCounter++;
             for (Score score : getSafeScore()) {
                 score.time();
             }
@@ -208,6 +205,10 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
                     graphics.setColor(new Color(snake2.getRed(), snake2.getGreen(), snake2.getBlue()));
                     graphics.drawString("Snake 2: " + snake2.getScore(), 5, 24);
                 }
+                graphics.setFont(new Font("Courier New", Font.PLAIN, 12));
+                graphics.setColor(new Color(255,255,255));
+                graphics.drawString("Time: " + moveDelayCounter + " seconds", 5, 36);
+
                 if (gridObjects != null) {
                     for (GridObject gridObject : gridObjects.getObjects()) {
                         if (gridObject.getType() == GridObjectType.APPLE) {
@@ -316,7 +317,6 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
          */
         for (GridObject object : gridObjects.getObjects()) {
             if (object.getLocation().equals(data.getPoint()) == true) {
-                System.out.println("HIT = " + object.getType());
                 if (object.getType() == GridObjectType.APPLE) {
                     data.getSnake().setScore(data.getSnake().getScore() + 100);
                     scores.add(new Score(object.getLocation(), 100));
@@ -381,7 +381,6 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
     }
 
     public void clearGridObjects() {
-//        gridObjects.getObjects().clear();
         gridObjects.clear();
     }
 
