@@ -10,5 +10,5 @@ package snakeinator;
  * @author Benjamin Wong
  */
 public enum Direction {
-    UP, DOWN, LEFT, RIGHT
+    UP, DOWN, LEFT, RIGHT;
 }

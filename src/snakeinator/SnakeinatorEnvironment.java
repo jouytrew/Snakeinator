@@ -42,25 +42,13 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
          * First Snake
          */
 //        snake = new Snake(Direction.RIGHT, this, this);
-        snake = new ChainSnake(Direction.RIGHT, this, this);
-        snake.setRGB(255, 255, 255);
-
-        ArrayList<Point> body = new ArrayList<>();
-        body.add(new Point(2, 2));
-        snake.setSnake(body);
-        snake.setGrowthCounter(3);
+        snake = new ChainSnake(new Point(2, 2), Direction.RIGHT, new Color(255, 255, 255), this, this);
 
         /**
          * End of First Snake Snake 2 below
          */
 //        snake2 = new Snake(Direction.RIGHT, this, this);
-        snake2 = new ChainSnake(Direction.RIGHT, this, this);
-        snake2.setRGB(0, 255, 0);
-
-        ArrayList<Point> body2 = new ArrayList<>();
-        body2.add(new Point(2, 10));
-        snake2.setSnake(body2);
-        snake2.setGrowthCounter(3);
+        snake2 = new ChainSnake(new Point(2, 10), Direction.RIGHT, new Color(0, 255, 0), this, this);
 
         gridObjects = new GridObjects();
 

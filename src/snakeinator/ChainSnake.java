@@ -18,8 +18,8 @@ import java.util.ArrayList;
  */
 public class ChainSnake extends Snake {
     
-    public ChainSnake(Direction direction, GridDrawData drawData, SnakeLocationValidatorIntf snakeLocationValidator) {
-        super(direction, drawData, snakeLocationValidator);
+    public ChainSnake(Point startLoc, Direction direction, Color color, GridDrawData drawData, SnakeLocationValidatorIntf snakeLocationValidator) {
+        super(startLoc, direction, color, drawData, snakeLocationValidator);
     }
     
     @Override
@@ -38,7 +38,7 @@ public class ChainSnake extends Snake {
 
             // For all nodes (after the HEAD (the  first) draw a connector from 
             // the center of the current cell to the center of previous cell
-            graphics.setColor(new Color(getRed(), getGreen(), getBlue(), 100));
+            graphics.setColor(this.color);
             fillBar(graphics, cellCoM, previousCellCoM, cellWidth / 2);
 
             previousCellCoM = cellCoM;
@@ -191,81 +191,10 @@ public class ChainSnake extends Snake {
     }
     
     //<editor-fold defaultstate="collapsed" desc="Fields">
-    private Direction direction = Direction.RIGHT;
-    private Boolean gamePlaying = true;
-    private SnakeLocationValidatorIntf snakeLocationValidator;
-    private Boolean paused = false;
 
-    private Color color;
-    private int red = 0;
-    private int green = 0;
-    private int blue = 0;
+    private SnakeLocationValidatorIntf snakeLocationValidator;
 
     static public final int HEAD_POSITION = 0;
 //</editor-fold>
-    
-    @Override
-    public void setRGB(int red, int green, int blue) {
-        setColor(new Color(red, green, blue));
-        this.setRed(red);
-        this.setGreen(green);
-        this.setBlue(blue);
-    }
-
-    /**
-     * @return the color
-     */
-    public Color getColor() {
-        return color;
-    }
-
-    /**
-     * @param color the color to set
-     */
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-    /**
-     * @return the red
-     */
-    public int getRed() {
-        return red;
-    }
-
-    /**
-     * @param red the red to set
-     */
-    public void setRed(int red) {
-        this.red = red;
-    }
-
-    /**
-     * @return the green
-     */
-    public int getGreen() {
-        return green;
-    }
-
-    /**
-     * @param green the green to set
-     */
-    public void setGreen(int green) {
-        this.green = green;
-    }
-
-    /**
-     * @return the blue
-     */
-    public int getBlue() {
-        return blue;
-    }
-
-    /**
-     * @param blue the blue to set
-     */
-    public void setBlue(int blue) {
-        this.blue = blue;
-    }
     
 }

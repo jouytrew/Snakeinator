@@ -24,15 +24,9 @@ public class Snake {
     private SnakeLocationValidatorIntf snakeLocationValidator;
     private Direction noMove = null;
 
-    private int red;
-    private int green;
-    private int blue;
-    private int opac;
+    protected Color color;
     private int growthCounter;
 
-    private Color WHITE = Color.WHITE;
-    private double MAX_OPACITY = 255;
-    private double MIN_OPACITY = 30;
     private int score;
 
     static public final int HEAD_POSITION = 0;
@@ -40,14 +34,11 @@ public class Snake {
 
     //<editor-fold defaultstate="collapsed" desc="Graphics Draw">
     public void draw(Graphics graphics) {
-        double opacity = getMAX_OPACITY();
-        double opacityStepSize = (getMAX_OPACITY() - getMIN_OPACITY()) / getSnake().size();
 
         for (Point bodySegmentLocation : getSafeSnake()) {
             Point topLeft = drawData.getCellSystemCoordinate(bodySegmentLocation);
-            graphics.setColor(new Color(red, green, blue, (int) opacity));
+            graphics.setColor(color);
             graphics.fillRect(topLeft.x, topLeft.y, drawData.getCellWidth(), drawData.getCellHeight());
-            opacity -= opacityStepSize;
         }
     }
 //</editor-fold>
@@ -110,16 +101,18 @@ public class Snake {
         }
     }
 
-    public Snake(Direction direction, GridDrawData drawData, SnakeLocationValidatorIntf snakeLocationValidator) {
+    public Snake(Point startLoc, Direction direction, Color color, GridDrawData drawData, SnakeLocationValidatorIntf snakeLocationValidator) {
         this.direction = direction;
         this.drawData = drawData;
         this.snakeLocationValidator = snakeLocationValidator;
+        this.color = color;
+
+        snake.add(new Point(startLoc));
+        setGrowthCounter(3);
     }
 
     public void setRGB(int red, int green, int blue) {
-        this.red = red;
-        this.green = green;
-        this.blue = blue;
+        color = new Color(red, green, blue);
     }
 
     public int getGrowthCounter() {
@@ -134,30 +127,6 @@ public class Snake {
         growthCounter += length;
     }
 
-    public double getMAX_OPACITY() {
-        return MAX_OPACITY;
-    }
-
-    public void setMAX_OPACITY(int MAX_OPACITY) {
-        this.MAX_OPACITY = MAX_OPACITY;
-    }
-
-    public double getMIN_OPACITY() {
-        return MIN_OPACITY;
-    }
-
-    public void setMIN_OPACITY(int MIN_OPACITY) {
-        this.MIN_OPACITY = MIN_OPACITY;
-    }
-
-    public Color getWHITE() {
-        return WHITE;
-    }
-
-    public void setWHITE(Color WHITE) {
-        this.WHITE = WHITE;
-    }
-
     public SnakeLocationValidatorIntf getSnakeLocationValidator() {
         return snakeLocationValidator;
     }
@@ -167,7 +136,7 @@ public class Snake {
     }
 
     public Color getColor() {
-        return new Color(red, green, blue, opac);
+        return color;
     }
 
     public int getScore() {
@@ -230,6 +199,17 @@ public class Snake {
         return snake.get(HEAD_POSITION);
     }
 
+    /**
+     * @return the direction that the snake cannot move to
+     */
+    public Direction getNoMove() {
+        return noMove;
+    }
+
+    private void setNoMove(Direction direction) {
+        noMove = direction;
+    }
+
     public boolean contains(Point location) {
         for (Point bodyPart : snake) {
             if (location.equals(bodyPart)) {
@@ -239,19 +219,5 @@ public class Snake {
         return false;
     }
 //</editor-fold>
-
-    /**
-     * @return the noMove
-     */
-    public Direction getNoMove() {
-        return noMove;
-    }
-
-    /**
-     * @param noMove the noMove to set
-     */
-    public void setNoMove(Direction noMove) {
-        this.noMove = noMove;
-    }
 
 }
