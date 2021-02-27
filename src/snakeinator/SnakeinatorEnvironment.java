@@ -140,19 +140,22 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
 
     //<editor-fold defaultstate="collapsed" desc="PaintEnvironment">
     @Override
-    public void paintEnvironment(Graphics graphics) {
+    public void paintEnvironment(Graphics g) {
+
         //<editor-fold defaultstate="collapsed" desc="antiAlias">
         /**
          * Graphics 2D used to anti-alias images/shapes
          */
-        Graphics2D g2d = (Graphics2D) graphics;
+        Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(
                 RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(
                 RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-//</editor-fold>
+//</editor-fold> //
+        // TODO: draw with Graphics2D instead of graphics
+
         switch (getGameState()) {
             //<editor-fold defaultstate="collapsed" desc="GameState : START">
             case START:
@@ -164,43 +167,43 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
             case PLAYING:
                 if (drawGrid) {
                     if (grid != null) {
-                        grid.paintComponent(graphics);
+                        grid.paintComponent(g);
                     }
                 }
                 for (Point clearAreaPoint : getSafeClearArea()){
                     Point topLeft = grid.getCellSystemCoordinate(clearAreaPoint);
-                    graphics.setColor(new Color(255, 0, 0, 50));
-                    graphics.fillRect(topLeft.x, topLeft.y, grid.getCellWidth(), grid.getCellHeight());
+                    g.setColor(new Color(255, 0, 0, 50));
+                    g.fillRect(topLeft.x, topLeft.y, grid.getCellWidth(), grid.getCellHeight());
                 }
                 if (snake != null) {
-                    snake.draw(graphics);
-                    graphics.setFont(new Font("Courier New", Font.PLAIN, 12));
-                    graphics.drawString("Snake 1: " + snake.getScore(), 5, 12);
+                    snake.draw(g);
+                    g.setFont(new Font("Courier New", Font.PLAIN, 12));
+                    g.drawString("Snake 1: " + snake.getScore(), 5, 12);
                 }
                 if (snake2 != null) {
-                    snake2.draw(graphics);
-                    graphics.setFont(new Font("Courier New", Font.PLAIN, 12));
-                    graphics.drawString("Snake 2: " + snake2.getScore(), 5, 24);
+                    snake2.draw(g);
+                    g.setFont(new Font("Courier New", Font.PLAIN, 12));
+                    g.drawString("Snake 2: " + snake2.getScore(), 5, 24);
                 }
-                graphics.setFont(new Font("Courier New", Font.PLAIN, 12));
-                graphics.setColor(new Color(255,255,255));
-                graphics.drawString("Time: " + moveDelayCounter + " seconds", 5, 36);
+                g.setFont(new Font("Courier New", Font.PLAIN, 12));
+                g.setColor(new Color(255,255,255));
+                g.drawString("Time: " + moveDelayCounter + " seconds", 5, 36);
 
                 if (gridObjects != null) {
                     for (GridObject gridObject : gridObjects.getObjects()) {
                         if (gridObject.getType() == GridObjectType.APPLE) {
-                            GraphicsPalette.drawApple(graphics, grid.getCellSystemCoordinate(gridObject.getLocation()),
+                            GraphicsPalette.drawApple(g, grid.getCellSystemCoordinate(gridObject.getLocation()),
                                     grid.getCellSize(), Color.RED);
                         }
                         if (gridObject.getType() == GridObjectType.POISON_BOTTLE) {
-                            GraphicsPalette.drawPoisonBottle(graphics, grid.getCellSystemCoordinate(gridObject.getLocation()),
+                            GraphicsPalette.drawPoisonBottle(g, grid.getCellSystemCoordinate(gridObject.getLocation()),
                                     grid.getCellSize(), Color.yellow);
                         }
                     }
                 }
                 ArrayList<Score> scoresToRemove = new ArrayList<>();
                 for (Score score : scores) { // TODO: get rid of safe scores methods?
-                    score.draw(graphics);
+                    score.draw(g);
                     if (score.getTimeLeft() <= 0) {
                         scoresToRemove.add(score);
                         // scores.remove(score);
