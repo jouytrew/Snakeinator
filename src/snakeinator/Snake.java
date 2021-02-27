@@ -16,7 +16,7 @@ import java.util.ArrayList;
  */
 public class Snake {
 
-//<editor-fold defaultstate="collapsed" desc="Fields">
+    //<editor-fold defaultstate="collapsed" desc="Fields">
     private ArrayList<Point> snake = new ArrayList<>();
     private Direction direction = Direction.RIGHT;
     private GridDrawData drawData;
@@ -38,21 +38,21 @@ public class Snake {
     static public final int HEAD_POSITION = 0;
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="Graphics Draw">
+    //<editor-fold defaultstate="collapsed" desc="Graphics Draw">
     public void draw(Graphics graphics) {
         double opacity = getMAX_OPACITY();
         double opacityStepSize = (getMAX_OPACITY() - getMIN_OPACITY()) / getSnake().size();
 
         for (Point bodySegmentLocation : getSafeSnake()) {
             Point topLeft = drawData.getCellSystemCoordinate(bodySegmentLocation);
-            graphics.setColor(new Color(getRed(), getGreen(), getBlue(), (int) opacity));
+            graphics.setColor(new Color(red, green, blue, (int) opacity));
             graphics.fillRect(topLeft.x, topLeft.y, drawData.getCellWidth(), drawData.getCellHeight());
             opacity -= opacityStepSize;
         }
     }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="Movements">
+    //<editor-fold defaultstate="collapsed" desc="Movements">
     public void move() {
 //make the snake move
         Point newHead = (Point) getHead().clone();
@@ -84,7 +84,7 @@ public class Snake {
     }
     //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="GamePlaying">
+    //<editor-fold defaultstate="collapsed" desc="GamePlaying">
     public Boolean getGamePlaying() {
         return gamePlaying;
     }
@@ -94,7 +94,7 @@ public class Snake {
     }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="Methods">
+    //<editor-fold defaultstate="collapsed" desc="Methods">
     public void checkSelfHit() {
         int i = 0;
         for (Point bodyPart : getBody()) {
@@ -116,10 +116,10 @@ public class Snake {
         this.snakeLocationValidator = snakeLocationValidator;
     }
 
-    public void setColorCode(int red, int green, int blue) {
-        this.setRed(red);
-        this.setGreen(green);
-        this.setBlue(blue);
+    public void setRGB(int red, int green, int blue) {
+        this.red = red;
+        this.green = green;
+        this.blue = blue;
     }
 
     public int getGrowthCounter() {
@@ -158,38 +158,6 @@ public class Snake {
         this.WHITE = WHITE;
     }
 
-    public int getRed() {
-        return red;
-    }
-
-    public void setRed(int red) {
-        this.red = red;
-    }
-
-    public int getGreen() {
-        return green;
-    }
-
-    public void setGreen(int green) {
-        this.green = green;
-    }
-
-    public int getBlue() {
-        return blue;
-    }
-
-    public void setBlue(int blue) {
-        this.blue = blue;
-    }
-
-    public int getOpac() {
-        return opac;
-    }
-
-    public void setOpac(int opac) {
-        this.opac = opac;
-    }
-
     public SnakeLocationValidatorIntf getSnakeLocationValidator() {
         return snakeLocationValidator;
     }
@@ -198,12 +166,24 @@ public class Snake {
         this.snakeLocationValidator = snakeLocationValidator;
     }
 
+    public Color getColor() {
+        return new Color(red, green, blue, opac);
+    }
+
     public int getScore() {
         return score;
     }
 
     public void setScore(int score) {
         this.score = score;
+    }
+
+    /**
+     * Increment the snake's score by 'increment'
+     * @param increment value to increment the Snake's internal score by
+     */
+    public void incrementScore(int increment) {
+        score += increment;
     }
 
     public ArrayList<Point> getSnake() {

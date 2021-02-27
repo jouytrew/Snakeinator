@@ -30,22 +30,20 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
     public SnakeinatorEnvironment() {
     }
 
-//<editor-fold defaultstate="collapsed" desc="initializeEnvironment">
+    //<editor-fold defaultstate="collapsed" desc="initializeEnvironment">
     @Override
     public void initializeEnvironment() {
 
         this.setBackground(ResourceTools.loadImageFromResource("resources/background.jpg").getScaledInstance(1366, 768, Image.SCALE_SMOOTH));
         grid = new Grid(40, 25, 25, 25, new Point(50, 50), Color.RED);
         scores = new ArrayList<>();
-        safeScores = new ArrayList<>();
-        safeScores = getSafeScore();
 
         /**
          * First Snake
          */
 //        snake = new Snake(Direction.RIGHT, this, this);
         snake = new ChainSnake(Direction.RIGHT, this, this);
-        snake.setColorCode(255, 255, 255);
+        snake.setRGB(255, 255, 255);
 
         ArrayList<Point> body = new ArrayList<>();
         body.add(new Point(2, 2));
@@ -57,7 +55,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
          */
 //        snake2 = new Snake(Direction.RIGHT, this, this);
         snake2 = new ChainSnake(Direction.RIGHT, this, this);
-        snake2.setColorCode(0, 255, 0);
+        snake2.setRGB(0, 255, 0);
 
         ArrayList<Point> body2 = new ArrayList<>();
         body2.add(new Point(2, 10));
@@ -71,7 +69,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
     }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="timerTaskHandler">
+    //<editor-fold defaultstate="collapsed" desc="timerTaskHandler">
     @Override
     public void timerTaskHandler() {
         if (!paused) {
@@ -84,14 +82,14 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
                 }
             }
             moveDelayCounter++;
-            for (Score score : getSafeScore()) {
+            for (Score score : scores) {
                 score.time();
             }
         }
     }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="keyPressedHandler">
+    //<editor-fold defaultstate="collapsed" desc="keyPressedHandler">
     @Override
     public void keyPressedHandler(KeyEvent e) {
         /**
@@ -137,7 +135,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
     }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="keyReleasedHandler">
+    //<editor-fold defaultstate="collapsed" desc="keyReleasedHandler">
     @Override
     public void keyReleasedHandler(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_G) {
@@ -153,13 +151,13 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
     }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="environmentMouseClicked">
+    //<editor-fold defaultstate="collapsed" desc="environmentMouseClicked">
     @Override
     public void environmentMouseClicked(MouseEvent e) {
     }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="PaintEnvironment">
+    //<editor-fold defaultstate="collapsed" desc="PaintEnvironment">
     @Override
     public void paintEnvironment(Graphics graphics) {
         //<editor-fold defaultstate="collapsed" desc="antiAlias">
@@ -196,13 +194,11 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
                 if (snake != null) {
                     snake.draw(graphics);
                     graphics.setFont(new Font("Courier New", Font.PLAIN, 12));
-                    graphics.setColor(new Color(snake.getRed(), snake.getGreen(), snake.getBlue()));
                     graphics.drawString("Snake 1: " + snake.getScore(), 5, 12);
                 }
                 if (snake2 != null) {
                     snake2.draw(graphics);
                     graphics.setFont(new Font("Courier New", Font.PLAIN, 12));
-                    graphics.setColor(new Color(snake2.getRed(), snake2.getGreen(), snake2.getBlue()));
                     graphics.drawString("Snake 2: " + snake2.getScore(), 5, 24);
                 }
                 graphics.setFont(new Font("Courier New", Font.PLAIN, 12));
@@ -221,13 +217,16 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
                         }
                     }
                 }
-                for (Score score : getSafeScore()) {
+                ArrayList<Score> scoresToRemove = new ArrayList<>();
+                for (Score score : scores) { // TODO: get rid of safe scores methods?
                     score.draw(graphics);
-                }
-                for (Score score : getSafeScore()) {
                     if (score.getTimeLeft() <= 0) {
-                        scores.remove(score);
+                        scoresToRemove.add(score);
+                        // scores.remove(score);
                     }
+                }
+                for (Score score : scoresToRemove) {
+                    scores.remove(score);
                 }
                 break;
 //</editor-fold>
@@ -247,7 +246,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
     }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="GridDrawData Interface">
+    //<editor-fold defaultstate="collapsed" desc="GridDrawData Interface">
     @Override
     public int getCellHeight() {
         return grid.getCellHeight();
@@ -279,7 +278,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
     }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="On Screen GridMethods">
+    //<editor-fold defaultstate="collapsed" desc="On Screen GridMethods">
     public Boolean getDrawGrid() {
         return drawGrid;
     }
@@ -293,7 +292,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
     }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="SnakeLocationValidatorIntf">
+    //<editor-fold defaultstate="collapsed" desc="SnakeLocationValidatorIntf">
     @Override
     public SnakeAndPoint validateLocation(SnakeAndPoint data) {
         data.getSnake().checkSelfHit();
@@ -318,12 +317,12 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
         for (GridObject object : gridObjects.getObjects()) {
             if (object.getLocation().equals(data.getPoint()) == true) {
                 if (object.getType() == GridObjectType.APPLE) {
-                    data.getSnake().setScore(data.getSnake().getScore() + 100);
+                    data.getSnake().incrementScore(100);
                     scores.add(new Score(object.getLocation(), 100));
                     object.setLocation(randomDeconflictedGridLocation());
                     data.getSnake().grow(1);
                 } else if (object.getType() == GridObjectType.POISON_BOTTLE) {
-                    data.getSnake().setScore(data.getSnake().getScore() - 200);
+                    data.getSnake().incrementScore(-200);
                     scores.add(new Score(object.getLocation(), -200));
                     object.setLocation(randomDeconflictedGridLocation());
                     AudioPlayer.play("/resources/grenade.wav");
@@ -334,7 +333,7 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
     }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="Fields">
+    //<editor-fold defaultstate="collapsed" desc="Fields">
     private Grid grid;
     private Snake snake;
     private boolean drawGrid = true;
@@ -354,7 +353,6 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
 
     private GridObjects gridObjects;
     private ArrayList<Score> scores;
-    private ArrayList<Score> safeScores;
 //</editor-fold>
 
     public Point randomGridLocation() {
@@ -363,15 +361,8 @@ class SnakeinatorEnvironment extends Environment implements GridDrawData, SnakeL
 
     public Point randomDeconflictedGridLocation() {
         Point location = randomGridLocation();
-        return (snake.contains(location) || snake2.contains(location) || gridObjects.getObjectLocations().contains(location) || clearArea.contains(location)) ? randomDeconflictedGridLocation() : location;
-    }
-
-    private ArrayList<Score> getSafeScore() {
-        ArrayList<Score> safeScore = new ArrayList<>();
-        for (Score score : scores) {
-            safeScore.add(score);
-        }
-        return safeScore;
+        return (snake.contains(location) || snake2.contains(location) ||
+                gridObjects.getObjectLocations().contains(location) || clearArea.contains(location)) ? randomDeconflictedGridLocation() : location;
     }
 
     public void addGridObject(GridObjectType objectType, int i) {

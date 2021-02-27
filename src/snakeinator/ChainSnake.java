@@ -205,7 +205,7 @@ public class ChainSnake extends Snake {
 //</editor-fold>
     
     @Override
-    public void setColorCode(int red, int green, int blue) {
+    public void setRGB(int red, int green, int blue) {
         setColor(new Color(red, green, blue));
         this.setRed(red);
         this.setGreen(green);
