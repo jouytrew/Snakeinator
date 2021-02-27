@@ -16,6 +16,18 @@ import java.util.ArrayList;
  */
 public class Snake {
 
+    //<editor-fold desc="Constructor">
+    public Snake(Point startLoc, Direction direction, Color color, GridDrawData drawData, SnakeLocationValidatorIntf snakeLocationValidator) {
+        this.direction = direction;
+        this.drawData = drawData;
+        this.snakeLocationValidator = snakeLocationValidator;
+        this.color = color;
+
+        snake.add(new Point(startLoc));
+        setGrowthCounter(3);
+    }
+    //</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="Fields">
     private ArrayList<Point> snake = new ArrayList<>();
     private Direction direction;
@@ -33,6 +45,11 @@ public class Snake {
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Graphics Draw">
+
+    /**
+     * Draw function called in the environment
+     * @param graphics Java graphics used to draw.
+     */
     public void draw(Graphics graphics) {
 
         for (Point bodySegmentLocation : getSafeSnake()) {
@@ -44,8 +61,14 @@ public class Snake {
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Movements">
+
+    /**
+     * Moves the snake! The snake is moved by adding a new point in the direction the snake is travelling.
+     * If the snake needs to grow (growthCounter > 0), such as when it eats an apple, then the tail is not deleted.
+     * Otherwise, the tail is removed. This way we can move the snake by only adding and subtracting one point,
+     * and not moving all the individual body parts.
+     */
     public void move() {
-//make the snake move
         Point newHead = (Point) getHead().clone();
         if (direction == Direction.DOWN) {
             newHead.y++;
@@ -75,45 +98,14 @@ public class Snake {
     }
     //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="GamePlaying">
-    public Boolean getGamePlaying() {
-        return gamePlaying;
-    }
+    //<editor-fold defaultstate="collapsed" desc="Setters/Getters">
+    public Boolean getGamePlaying() { return gamePlaying; }
 
     public void setGamePlaying(Boolean gamePlaying) {
         this.gamePlaying = gamePlaying;
     }
-//</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Methods">
-    public void checkSelfHit() {
-        int i = 0;
-        for (Point bodyPart : getBody()) {
-            i++;
-            if (getHead().equals(bodyPart)) {
-                //remove everything from position i onwards...?!?!?!
-                for (int j = snake.size() - 1; j >= i; j--) {
-                    snake.remove(j);
-                    setScore(getScore() - 25);
-                }
-                break;
-            }
-        }
-    }
-
-    public Snake(Point startLoc, Direction direction, Color color, GridDrawData drawData, SnakeLocationValidatorIntf snakeLocationValidator) {
-        this.direction = direction;
-        this.drawData = drawData;
-        this.snakeLocationValidator = snakeLocationValidator;
-        this.color = color;
-
-        snake.add(new Point(startLoc));
-        setGrowthCounter(3);
-    }
-
-    public void setRGB(int red, int green, int blue) {
-        color = new Color(red, green, blue);
-    }
+    public void setRGB(int red, int green, int blue) { color = new Color(red, green, blue); }
 
     public int getGrowthCounter() {
         return growthCounter;
@@ -123,17 +115,7 @@ public class Snake {
         this.growthCounter = growthCounter;
     }
 
-    public void grow(int length) {
-        growthCounter += length;
-    }
-
-    public SnakeLocationValidatorIntf getSnakeLocationValidator() {
-        return snakeLocationValidator;
-    }
-
-    public void setSnakeLocationValidator(SnakeLocationValidatorIntf snakeLocationValidator) {
-        this.snakeLocationValidator = snakeLocationValidator;
-    }
+    public void setSnakeLocationValidator(SnakeLocationValidatorIntf snakeLocationValidator) { this.snakeLocationValidator = snakeLocationValidator; }
 
     public Color getColor() {
         return color;
@@ -147,30 +129,8 @@ public class Snake {
         this.score = score;
     }
 
-    /**
-     * Increment the snake's score by 'increment'
-     * @param increment value to increment the Snake's internal score by
-     */
-    public void incrementScore(int increment) {
-        score += increment;
-    }
-
     public ArrayList<Point> getSnake() {
         return snake;
-    }
-
-    private ArrayList<Point> getSafeSnake() {
-        ArrayList<Point> safeBody = new ArrayList<>();
-        safeBody.addAll(getSnake());
-        return safeBody;
-    }
-
-    public ArrayList<Point> getBody() {
-        ArrayList<Point> body = new ArrayList<>();
-        for (int i = 1; i < this.snake.size(); i++) {
-            body.add(this.snake.get(i));
-        }
-        return body;
     }
 
     public void setSnake(ArrayList<Point> snake) {
@@ -206,6 +166,60 @@ public class Snake {
 
     private void setNoMove(Direction direction) {
         noMove = direction;
+    }
+//</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="Methods">
+
+    /**
+     * This method currently returns the snake without the head
+     * @return the body without the head
+     */
+    public ArrayList<Point> getBody() {
+        ArrayList<Point> body = new ArrayList<>();
+        for (int i = 1; i < snake.size(); i++) {
+            body.add(snake.get(i));
+        }
+        return body;
+    }
+
+    public void checkSelfHit() {
+        int i = 0;
+        for (Point bodyPart : getBody()) {
+            i++;
+            if (getHead().equals(bodyPart)) {
+                //remove everything from position i onwards...?!?!?!
+                for (int j = snake.size() - 1; j >= i; j--) {
+                    snake.remove(j);
+                    setScore(getScore() - 25);
+                }
+                break;
+            }
+        }
+    }
+
+    public SnakeLocationValidatorIntf getSnakeLocationValidator() {
+        return snakeLocationValidator;
+    }
+
+    /**
+     * Increment the snake's score by 'increment'
+     * @param increment value to increment the Snake's internal score by
+     */
+    public void incrementScore(int increment) { score += increment; }
+
+    /**
+     * grow the snake by 'length'
+     * @param length the number of extra segments the snake needs to grow by
+     */
+    public void grow(int length) {
+        growthCounter += length;
+    }
+
+    private ArrayList<Point> getSafeSnake() {
+        ArrayList<Point> safeBody = new ArrayList<>();
+        safeBody.addAll(getSnake());
+        return safeBody;
     }
 
     public boolean contains(Point location) {
